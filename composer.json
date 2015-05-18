@@ -1,0 +1,25 @@
+{
+    "name": "lalocespedes/parsercfdi",
+    "description": "parser cfdi",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": ">=5.4",
+        "deviservi/nusoap": "1.*",
+        "mpdf/mpdf": "5.*",
+        "twig/twig": "1.*"
+
+    },
+    "authors": [
+        {
+            "name": "Eduardo Cespedes",
+            "email": "lalocespedes@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-0": {
+            "cfdiMx": "src/"
+        }
+    }
+}
