@@ -12,7 +12,6 @@
             "email": "lalocespedes@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
             "lalocespedes\\": "src/"
