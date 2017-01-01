@@ -1,5 +1,8 @@
 <?php
 
+ini_set('display_errors', '1');
+error_reporting(E_ALL);
+
 require 'vendor/autoload.php';
 
 $invoice = [];
@@ -9,7 +12,7 @@ $invoice['comprobante'] = [
     "serie" => "B",
     "folio" => "",
     "fecha" => "",
-    "formaDePago" => "PAGO ENUNASOLAEXHIBICION",
+    "formaDePago" => "PAGOENUNASO LAEXHIBICION",
     "subTotal" => "",
     "descuento" => "",
     "total" => "",
@@ -21,7 +24,13 @@ $invoice['comprobante'] = [
     "LugarExpedicion" => "Matehuala, San Luis Potosi"
 ];
 
+$cfdi = new lalocespedes\Cfdi;
 
-$cfdi = new lalocespedes\Cfdi($invoice);
+$cfdi->setData($invoice);
+
+if($cfdi->failed()) {
+
+    return dump(($cfdi->errors()));
+}
 
 dump($cfdi->build()->getXml());

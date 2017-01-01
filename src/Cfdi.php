@@ -24,9 +24,17 @@ use Respect\Validation\Validator as v;
  */
 class Cfdi
 {
-    protected $errors;
-    protected $validate;
+    /**
+     * @var array
+     */
+    protected $errors = [];
+    
+    /**
+     * @var bool
+     */
+    protected $valid;
 
+    protected $data;
     protected $xml;
     protected $comprobante;
     protected $emisor;
@@ -39,16 +47,23 @@ class Cfdi
     protected $impuestostraslados;
     protected $complemento;
 
-    function __construct(array $invoice)
+    /**
+	 * Sets the data 
+	 * @param array $data
+	 */
+	public function setData(array $data)
+	{
+		$this->data = $data;
+        $this->valid = $this->validate($data);
+	}
+
+    public function build()
     {
-        // Valid array invoice
-        $this->validate = $this->validate($invoice);
-        
-        if($this->validate) {
+        if($this->valid) {
 
             $this->xml = new DOMdocument("1.0","UTF-8");
 
-            $this->comprobante = new Comprobante($this->xml, $invoice['comprobante']);
+            $this->comprobante = new Comprobante($this->xml, $this->data['comprobante']);
             $this->emisor = new Emisor($this->xml, $this->comprobante);
             $this->domiciliofiscal = new DomicilioFiscal($this->xml, $this->emisor);
             $this->regimenfiscal = new RegimenFiscal($this->xml, $this->emisor);
@@ -60,29 +75,32 @@ class Cfdi
             $this->impuestostraslados = new ImpuestosTraslados($this->xml, $this->impuestos);
             $this->complemento = new Complemento($this->xml, $this->comprobante);
         }
-    }
 
-    public function build()
-    {
         return $this;
     }
 
     public function getXml()
     {
-        if(!$this->validate) {
-
-            return json_encode($this->errors);
+        if($this->valid) {
+            
+            $this->xml->formatOutput = true;
+            return $this->xml->saveXML();
         }
 
-		$this->xml->formatOutput = true;
-		return $this->xml->saveXML();
+        return $this->xml = null;
 	}
 
-    public function validate(array $data)
+    public function validate()
     {
+        if(!count($this->data)) {
+            
+            $this->errors = ["SetData esta vacio"];
+            return false;
+        }
+
         $valid = new \lalocespedes\Validation\Validator;
-        $valid->validate($data['comprobante'], [
-            'formaDePago' => \Respect\Validation\Validator::noWhitespace()->length(1, 5)
+        $valid->validate($this->data['comprobante'], [
+            'formaDePago' => \Respect\Validation\Validator::noWhitespace()->length(1, 50)
         ]);
 
         if($valid->failed()) {
@@ -92,5 +110,15 @@ class Cfdi
         }
 
         return true;
+    }
+
+    public function failed()
+    {
+        return !empty($this->errors);
+    }
+
+    public function errors()
+    {
+        return $this->errors;
     }
 }
