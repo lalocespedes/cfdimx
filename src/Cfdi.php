@@ -34,7 +34,7 @@ class Cfdi
      */
     protected $valid;
 
-    protected $data;
+    protected $datacomprobante;
     protected $xml;
     protected $comprobante;
     protected $emisor;
@@ -51,30 +51,42 @@ class Cfdi
 	 * Sets the data 
 	 * @param array $data
 	 */
-	public function setData(array $data)
+	public function setComprobante(array $data)
 	{
-		$this->data = $data;
-        $this->valid = $this->validate($data);
+        $this->valid = false;
+
+        $valid = new \lalocespedes\Validation\Complemento;
+        $valid->validate($data, [
+            'formaDePago' => \Respect\Validation\Validator::noWhitespace()->length(1, 50),
+            'tipoDeComprobante' => \Respect\Validation\Validator::notEmpty()->noWhitespace(),
+            'NumCtaPago' => \Respect\Validation\Validator::notEmpty()->noWhitespace()
+        ]);
+
+        if($valid->failed()) {
+
+            return $this->errors = $valid->errors();
+        }
+
+		$this->datacomprobante = $data;
+
+        return $this->valid = true;
 	}
 
     public function build()
     {
-        if($this->valid) {
+        $this->xml = new DOMdocument("1.0","UTF-8");
 
-            $this->xml = new DOMdocument("1.0","UTF-8");
-
-            $this->comprobante = new Comprobante($this->xml, $this->data['comprobante']);
-            $this->emisor = new Emisor($this->xml, $this->comprobante);
-            $this->domiciliofiscal = new DomicilioFiscal($this->xml, $this->emisor);
-            $this->regimenfiscal = new RegimenFiscal($this->xml, $this->emisor);
-            $this->receptor = new Receptor($this->xml, $this->comprobante);
-            $this->receptordomicilio = new ReceptorDomicilio($this->xml, $this->receptor);
-            $this->conceptos = new Conceptos($this->xml, $this->comprobante);
-            $this->impuestos = new Impuestos($this->xml, $this->comprobante);
-            $this->impuestosretenciones = new ImpuestosRetenciones($this->xml, $this->impuestos);
-            $this->impuestostraslados = new ImpuestosTraslados($this->xml, $this->impuestos);
-            $this->complemento = new Complemento($this->xml, $this->comprobante);
-        }
+        $this->comprobante = new Comprobante($this->xml, $this->datacomprobante);
+        $this->emisor = new Emisor($this->xml, $this->comprobante);
+        $this->domiciliofiscal = new DomicilioFiscal($this->xml, $this->emisor);
+        $this->regimenfiscal = new RegimenFiscal($this->xml, $this->emisor);
+        $this->receptor = new Receptor($this->xml, $this->comprobante);
+        $this->receptordomicilio = new ReceptorDomicilio($this->xml, $this->receptor);
+        $this->conceptos = new Conceptos($this->xml, $this->comprobante);
+        $this->impuestos = new Impuestos($this->xml, $this->comprobante);
+        $this->impuestosretenciones = new ImpuestosRetenciones($this->xml, $this->impuestos);
+        $this->impuestostraslados = new ImpuestosTraslados($this->xml, $this->impuestos);
+        $this->complemento = new Complemento($this->xml, $this->comprobante);
 
         return $this;
     }
@@ -89,28 +101,6 @@ class Cfdi
 
         return $this->xml = null;
 	}
-
-    public function validate()
-    {
-        if(!count($this->data)) {
-            
-            $this->errors = ["SetData esta vacio"];
-            return false;
-        }
-
-        $valid = new \lalocespedes\Validation\Validator;
-        $valid->validate($this->data['comprobante'], [
-            'formaDePago' => \Respect\Validation\Validator::noWhitespace()->length(1, 50)
-        ]);
-
-        if($valid->failed()) {
-
-            $this->errors = $valid->errors();
-            return false;
-        }
-
-        return true;
-    }
 
     public function failed()
     {

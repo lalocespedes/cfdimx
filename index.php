@@ -11,22 +11,23 @@ $invoice['comprobante'] = [
     "version" => "3.2",
     "serie" => "B",
     "folio" => "",
-    "fecha" => "",
-    "formaDePago" => "PAGOENUNASO LAEXHIBICION",
-    "subTotal" => "",
-    "descuento" => "",
-    "total" => "",
-    "tipoDeComprobante" => "INGRESO",
-    "metodoDePago" => "",
+    "fecha" => "111",
+    "formaDePago" => "PAGOENUNASOLAE XHIBICION",
+    "subTotal" => "111",
+    "descuento" => "22",
+    "total" => "22",
+    "tipoDeComprobante" => "22 ",
+    "metodoDePago" => "22",
     "NumCtaPago" => "",
     "Moneda" => "",
     "TipoCambio" => "",
-    "LugarExpedicion" => "Matehuala, San Luis Potosi"
+    "LugarExpedicion" => "Matehuala, San Luis Potosi",
+    "lalo" => "cespedes"
 ];
 
 $cfdi = new lalocespedes\Cfdi;
 
-$cfdi->setData($invoice);
+$cfdi->setComprobante($invoice['comprobante']);
 
 if($cfdi->failed()) {
 
