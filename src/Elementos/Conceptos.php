@@ -2,6 +2,8 @@
 
 namespace lalocespedes\Elementos;
 
+use lalocespedes\Validation\Validator as v;
+
 /**
  * 
  */

@@ -8,10 +8,11 @@ namespace lalocespedes\Elementos;
 class Comprobante
 {
     protected $comprobante;
+    protected $validate;
 
-    function __construct($xml)
-    {
-       $this->comprobante = $xml->appendChild(
+    function __construct($xml, $data)
+    {        
+        $this->comprobante = $xml->appendChild(
             $xml->createElementNS("http://www.sat.gob.mx/cfd/3","cfdi:Comprobante")
         );
 
@@ -21,24 +22,7 @@ class Comprobante
             'http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv32.xsd'
         );
 
-        $attr = [
-            "version" =>"3.2",
-            "serie" => "B"
-//         // "folio" => $gen['folio'],
-//         // "fecha" => $gen['fecha_factura'],
-//         // "formaDePago" => $gen['formaDePago'] ? : "PAGO EN UNA SOLA EXHIBICION",
-//         // "subTotal" => $gen['subTotal'],
-//         // "descuento" => $gen['descuento'],
-//         // "total" => $gen['total'],
-//         // "tipoDeComprobante" => $gen['tipoDeComprobante'],
-//         // "metodoDePago" => $gen['metodoDePago'],
-//         // "NumCtaPago" => $gen['NumCtaPago'],
-//         // "Moneda" => $gen['Moneda'],
-//         // "TipoCambio" => $gen['TipoCambio'],
-//         // "LugarExpedicion" => $gen['LugarExpedicion'] ?: "Matehuala, San Luis Potosi"
-        ];
-
-        foreach ($attr as $key => $val) {
+        foreach ($data as $key => $val) {
 		    $val = preg_replace('/\s\s+/', ' ', $val); // Regla 5a y 5c
 		    $val = trim($val); // Regla 5b
 		    if (strlen($val)>0) { // Regla 6
