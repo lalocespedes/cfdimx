@@ -11,32 +11,13 @@ class Conceptos
 {
     protected $conceptos;
 
-    function __construct($xml, $comprobante)
+    function __construct($xml, $comprobante, array $data)
     {
         $this->conceptos = $xml->createElement("cfdi:Conceptos");
 
         $comprobante->appendChild($this->conceptos);
-
-        $conceptosArray = [
-			"0" => [
-                "noIdentificacion" => "222",
-                "cantidad" => "50",
-                "unidad" => "PZA",
-                "descripcion" => "DESC",
-                "valorUnitario" => number_format("1000", 2, '.',''),
-                "importe" => number_format("1100", 2, '.','')
-            ],
-            "1" => [
-                "noIdentificacion" => "111",
-                "cantidad" => "50",
-                "unidad" => "PZA",
-                "descripcion" => "DESC2",
-                "valorUnitario" => number_format("10002", 2, '.',''),
-                "importe" => number_format("11002", 2, '.','')
-            ]
-       	];
         
-        foreach ($conceptosArray as $key => $item) {
+        foreach ($data as $key => $item) {
 
             $concepto = $xml->createElement("cfdi:Concepto");
             $this->conceptos->appendChild($concepto);

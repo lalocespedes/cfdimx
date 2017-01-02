@@ -57,6 +57,25 @@ $invoice['receptordomicilio'] = [
     "codigoPostal" => "78700"
 ];
 
+$invoice['conceptos'] = [
+	"0" => [
+        "noIdentificacion" => "222",
+        "cantidad" => "100",
+        "unidad" => "PZA",
+        "descripcion" => "DESC",
+        "valorUnitario" => number_format("1000", 2, '.',''),
+        "importe" => number_format("1100", 2, '.','')
+    ],
+    "1" => [
+        "noIdentificacion" => "111",
+        "cantidad" => "50",
+        "unidad" => "PZA",
+        "descripcion" => "DESC2",
+        "valorUnitario" => number_format("10002", 2, '.',''),
+        "importe" => number_format("11002", 2, '.','')
+    ]
+];
+
 $cfdi = new lalocespedes\Cfdi;
 
 $cfdi->setComprobante($invoice['comprobante']);

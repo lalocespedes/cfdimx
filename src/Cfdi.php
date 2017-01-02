@@ -40,6 +40,8 @@ class Cfdi
     protected $dataregimenfiscal;
     protected $datareceptor;
     protected $datareceptordomicilio;
+    protected $dataconceptos;
+    protected $dataimpuestos;
     protected $xml;
     protected $comprobante;
     protected $emisor;
@@ -227,14 +229,18 @@ class Cfdi
     public function setConceptos(array $data)
     {
         $valid = new \lalocespedes\Validation\Conceptos;
-        $valid->validate($data, [
-            'cantidad' => \Respect\Validation\Validator::notEmpty(),
-            'unidad' => \Respect\Validation\Validator::notEmpty(),
-            'noIdentificacion' => \Respect\Validation\Validator::notEmpty(),
-            'descripcion' => \Respect\Validation\Validator::notEmpty(),
-            'valorUnitario' => \Respect\Validation\Validator::notEmpty(),
-            'importe' => \Respect\Validation\Validator::notEmpty()
-        ]);
+
+        foreach ($data as $key => $value) {
+
+            $valid->validate($value, [
+                'cantidad' => \Respect\Validation\Validator::notEmpty()->floatVal(),
+                'unidad' => \Respect\Validation\Validator::notEmpty(),
+                'noIdentificacion' => \Respect\Validation\Validator::stringType(),
+                'descripcion' => \Respect\Validation\Validator::notEmpty(),
+                'valorUnitario' => \Respect\Validation\Validator::notEmpty(),
+                'importe' => \Respect\Validation\Validator::notEmpty()
+            ]);
+        }
 
         if($valid->failed()) {
 
@@ -243,6 +249,36 @@ class Cfdi
         }
         
         $this->dataconceptos = $data;
+
+    }
+
+    /**
+	 * Sets the data Impuestos
+	 * @param array $data
+	 */
+    public function setImpuesots(array $data)
+    {
+        $valid = new \lalocespedes\Validation\Impuestos;
+
+        foreach ($data as $key => $value) {
+
+            $valid->validate($value, [
+                'cantidad' => \Respect\Validation\Validator::notEmpty()->floatVal(),
+                'unidad' => \Respect\Validation\Validator::notEmpty(),
+                'noIdentificacion' => \Respect\Validation\Validator::stringType(),
+                'descripcion' => \Respect\Validation\Validator::notEmpty(),
+                'valorUnitario' => \Respect\Validation\Validator::notEmpty(),
+                'importe' => \Respect\Validation\Validator::notEmpty()
+            ]);
+        }
+
+        if($valid->failed()) {
+
+            $this->valid = false;
+            return $this->errors = $valid->errors();
+        }
+        
+        $this->dataimpuestos = $data;
 
     }
 
@@ -256,8 +292,8 @@ class Cfdi
         $this->regimenfiscal = new RegimenFiscal($this->xml, $this->emisor, $this->dataregimenfiscal);
         $this->receptor = new Receptor($this->xml, $this->comprobante, $this->datareceptor);
         $this->receptordomicilio = new ReceptorDomicilio($this->xml, $this->receptor, $this->datareceptordomicilio);
-        $this->conceptos = new Conceptos($this->xml, $this->comprobante);
-        $this->impuestos = new Impuestos($this->xml, $this->comprobante);
+        $this->conceptos = new Conceptos($this->xml, $this->comprobante, $this->dataconceptos);
+        $this->impuestos = new Impuestos($this->xml, $this->comprobante, $this->dataimpuestos);
         $this->impuestosretenciones = new ImpuestosRetenciones($this->xml, $this->impuestos);
         $this->impuestostraslados = new ImpuestosTraslados($this->xml, $this->impuestos);
         $this->complemento = new Complemento($this->xml, $this->comprobante);
