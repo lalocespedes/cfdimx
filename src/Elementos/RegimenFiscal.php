@@ -9,17 +9,13 @@ class RegimenFiscal
 {
     protected $regimenfiscal;
 
-    function __construct($xml, $emisor)
+    function __construct($xml, $emisor, $data)
     {
         $this->regimenfiscal = $xml->createElement("cfdi:RegimenFiscal");
 
         $emisor->appendChild($this->regimenfiscal);
 
-        $attr = [
-			"Regimen" => "Regimennnn"
-       	];
-
-        foreach ($attr as $key => $val) {
+        foreach ($data as $key => $val) {
 		    $val = preg_replace('/\s\s+/', ' ', $val); // Regla 5a y 5c
 		    $val = trim($val); // Regla 5b
 		    if (strlen($val)>0) { // Regla 6

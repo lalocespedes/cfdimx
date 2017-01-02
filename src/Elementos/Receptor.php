@@ -9,18 +9,13 @@ class Receptor
 {
     protected $receptor;
 
-    function __construct($xml, $comprobante)
+    function __construct($xml, $comprobante, array $data)
     {
         $this->receptor = $xml->createElement("cfdi:Receptor");
 
         $comprobante->appendChild($this->receptor);
 
-        $attr = [
-			"rfc" => "YOOORECEPTOR",
-			"nombre" => "TUUURECEPTOR"
-       	];
-
-        foreach ($attr as $key => $val) {
+        foreach ($data as $key => $val) {
 		    $val = preg_replace('/\s\s+/', ' ', $val); // Regla 5a y 5c
 		    $val = trim($val); // Regla 5b
 		    if (strlen($val)>0) { // Regla 6

@@ -10,7 +10,7 @@ class Comprobante
     protected $comprobante;
     protected $validate;
 
-    function __construct($xml, $data)
+    function __construct($xml, array $data)
     {        
         $this->comprobante = $xml->appendChild(
             $xml->createElementNS("http://www.sat.gob.mx/cfd/3","cfdi:Comprobante")

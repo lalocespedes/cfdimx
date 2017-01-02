@@ -9,25 +9,13 @@ class ReceptorDomicilio
 {
     protected $receptordomicilio;
 
-    function __construct($xml, $receptor)
+    function __construct($xml, $receptor, array $data)
     {
         $this->receptordomicilio = $xml->createElement("cfdi:Domicilio");
 
         $receptor->appendChild($this->receptordomicilio);
 
-        $attr = [
-			"calle" => "calle 1",
-			"noExterior" => "123",
-			"noInterior" => "nada",
-			"colonia" => "micol",
-            "localidad" => "local",
-			"municipio" => "mpio",
-			"estado" => "edo",
-			"pais" => "mex",
-			"codigoPostal" => "nose"
-       	];
-
-        foreach ($attr as $key => $val) {
+        foreach ($data as $key => $val) {
 		    $val = preg_replace('/\s\s+/', ' ', $val); // Regla 5a y 5c
 		    $val = trim($val); // Regla 5b
 		    if (strlen($val)>0) { // Regla 6

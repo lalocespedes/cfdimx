@@ -8,7 +8,7 @@ use Respect\Validation\Exceptions\NestedValidationException;
 /**
  * 
  */
-class Complemento
+class EmisorDomicilioFiscal
 {
     protected $errors = [];
     protected $required;
@@ -16,7 +16,7 @@ class Complemento
     public function validate(array $array, array $rules)
     {
         if(!count($array)) {
-            return $this->errors = ["setComprobante esta vacio"];
+            return $this->errors = ["setEmisorDomicilioFiscal esta vacio"];
         }
 
         $this->required($array);
@@ -51,16 +51,11 @@ class Complemento
     public function required(array $array)
     {
          $this->required = [
-            "version",
-            "fecha",
-            "sello",
-            "formaDePago",
-            "noCertificado",
-            "certificado",
-            "subTotal",
-            "total",
-            "tipoDeComprobante",
-            "LugarExpedicion"
+            "calle",
+            "municipio",
+            "estado",
+            "pais",
+            "codigoPostal"
         ];
 
         foreach($this->required as $key => $value){

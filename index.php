@@ -10,24 +10,62 @@ $invoice = [];
 $invoice['comprobante'] = [
     "version" => "3.2",
     "serie" => "B",
-    "folio" => "",
+    "folio" => "10599",
     "fecha" => "111",
     "formaDePago" => "PAGOENUNASOLAE XHIBICION",
     "subTotal" => "111",
     "descuento" => "22",
     "total" => "22",
-    "tipoDeComprobante" => "22 ",
-    "metodoDePago" => "22",
-    "NumCtaPago" => "",
-    "Moneda" => "",
-    "TipoCambio" => "",
+    "tipoDeComprobante" => "INGRESO",
+    "metodoDePago" => "EFE",
+    "NumCtaPago" => "1234",
+    "Moneda" => "MXN",
+    "TipoCambio" => "1",
     "LugarExpedicion" => "Matehuala, San Luis Potosi",
-    "lalo" => "cespedes"
+    "sello" => "1111",
+    "noCertificado" => "2222",
+    "certificado" => "333"
+];
+
+$invoice['emisor'] = [
+    "rfc" => "CANN780217",
+    "nombre" => "aassdfff"
+];
+
+$invoice['emisordomiciliofiscal'] = [
+    "calle" => "calle uno",
+    "municipio" => "mate",
+    "estado" => "slp",
+    "pais" => "mex",
+    "codigoPostal" => "78700"
+];
+
+$invoice['regimenfiscal'] = [
+    "Regimen" => "REGIMEN GENERAL"
+];
+
+$invoice['receptor'] = [
+    "rfc" => "RNP721026",
+    "nombre" => "REFA"
+];
+
+$invoice['receptordomicilio'] = [
+    "calle" => "calle receptor",
+    "municipio" => "mate receptor",
+    "estado" => "slp receptor",
+    "pais" => "mex receptor",
+    "codigoPostal" => "78700"
 ];
 
 $cfdi = new lalocespedes\Cfdi;
 
 $cfdi->setComprobante($invoice['comprobante']);
+$cfdi->setEmisor($invoice['emisor']);
+$cfdi->setEmisorDomicilioFiscal($invoice['emisordomiciliofiscal']);
+$cfdi->setRegimenFiscal($invoice['regimenfiscal']);
+$cfdi->setReceptor($invoice['receptor']);
+$cfdi->setReceptorDomicilio($invoice['receptordomicilio']);
+$cfdi->setConceptos($invoice['conceptos']);
 
 if($cfdi->failed()) {
 
