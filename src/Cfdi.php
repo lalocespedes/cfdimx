@@ -334,18 +334,80 @@ class Cfdi
     {
         $this->xml = new DOMdocument("1.0","UTF-8");
 
+        if(is_null($this->datacomprobante)) {
+
+            $this->errors = [
+                "please setComprobante node"
+            ]; 
+            $this->valid = false;
+            return $this;
+
+        }
+
         $this->comprobante = new Comprobante($this->xml, $this->datacomprobante);
+
+        if(is_null($this->dataemisor)) {
+
+            $this->errors = [
+                "please setEmisor node"
+            ]; 
+            $this->valid = false;
+            return $this;
+
+        }
+
         $this->emisor = new Emisor($this->xml, $this->comprobante, $this->dataemisor);
-        $this->domiciliofiscal = new DomicilioFiscal($this->xml, $this->emisor, $this->dataemisordomiciliofiscal);
+
+        if(!is_null($this->dataemisordomiciliofiscal)) {
+            $this->domiciliofiscal = new DomicilioFiscal($this->xml, $this->emisor, $this->dataemisordomiciliofiscal);
+        }
+
+        if(is_null($this->dataregimenfiscal)) {
+
+            $this->errors = [
+                "please setRegimenFiscal node"
+            ]; 
+            $this->valid = false;
+            return $this;
+
+        }
+
         $this->regimenfiscal = new RegimenFiscal($this->xml, $this->emisor, $this->dataregimenfiscal);
+
+        if(is_null($this->datareceptor)) {
+
+            $this->errors = [
+                "please setReceptor node"
+            ]; 
+            $this->valid = false;
+            return $this;
+
+        }
+
         $this->receptor = new Receptor($this->xml, $this->comprobante, $this->datareceptor);
-        $this->receptordomicilio = new ReceptorDomicilio($this->xml, $this->receptor, $this->datareceptordomicilio);
+
+        if(!is_null($this->datareceptordomicilio)) {
+            $this->receptordomicilio = new ReceptorDomicilio($this->xml, $this->receptor, $this->datareceptordomicilio);
+        }
+
+        if(is_null($this->dataconceptos)) {
+
+            $this->errors = [
+                "please setConceptos node"
+            ]; 
+            $this->valid = false;
+            return $this;
+
+        }
+
         $this->conceptos = new Conceptos($this->xml, $this->comprobante, $this->dataconceptos);
+
         if(!is_null($this->dataimpuestos)) {
             $this->impuestos = new Impuestos($this->xml, $this->comprobante, $this->dataimpuestos);
             $this->impuestosretenciones = new ImpuestosRetenciones($this->xml, $this->impuestos, $this->dataimpuestosretenciones );
             $this->impuestostraslados = new ImpuestosTraslados($this->xml, $this->impuestos, $this->dataimpuestostrasladados);
         }
+        
         $this->complemento = new Complemento($this->xml, $this->comprobante);
 
         return $this;
@@ -359,7 +421,8 @@ class Cfdi
             return $this->xml->saveXML();
         }
 
-        return $this->xml = null;
+        $this->xml = null;
+        return $this->errors();
 	}
 
     public function failed()
