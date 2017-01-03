@@ -76,6 +76,26 @@ $invoice['conceptos'] = [
     ]
 ];
 
+$invoice['impuestos'] = [
+    "totalImpuestosRetenidos" => "1000",
+    "totalImpuestosTrasladados" => "500"
+];
+
+$invoice['impuestosretenciones'] = [
+    "0" => [
+        "impuesto" => "IVA",
+        "importe" => "16.00"
+    ]
+];
+
+$invoice['impuestostrasladados'] = [
+    "0" => [
+        "impuesto" => "IVA",
+        "tasa" => "16",
+        "importe" => "16.00"
+    ]
+];
+
 $cfdi = new lalocespedes\Cfdi;
 
 $cfdi->setComprobante($invoice['comprobante']);
@@ -85,6 +105,9 @@ $cfdi->setRegimenFiscal($invoice['regimenfiscal']);
 $cfdi->setReceptor($invoice['receptor']);
 $cfdi->setReceptorDomicilio($invoice['receptordomicilio']);
 $cfdi->setConceptos($invoice['conceptos']);
+$cfdi->setImpuestos($invoice['impuestos']);
+$cfdi->setImpuestosRetenciones($invoice['impuestosretenciones']);
+$cfdi->setImpuestosTrasladados($invoice['impuestostrasladados']);
 
 if($cfdi->failed()) {
 

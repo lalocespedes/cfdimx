@@ -9,7 +9,7 @@ class Impuestos
 {
     protected $impuestos;
 
-    function __construct($xml, $comprobante, array $data)
+    function __construct($xml, $comprobante, $data)
     {
         $this->impuestos = $xml->createElement("cfdi:Impuestos");
 

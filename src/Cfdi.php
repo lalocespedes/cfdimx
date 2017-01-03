@@ -262,13 +262,10 @@ class Cfdi
     {
         $valid = new \lalocespedes\Validation\Impuestos;
 
-        foreach ($data as $key => $value) {
-
-            $valid->validate($value, [
-                'totalImpuestosRetenidos' => \Respect\Validation\Validator::floatVal(),
-                'totalImpuestosTrasladados' => \Respect\Validation\Validator::floatVal()
-            ]);
-        }
+        $valid->validate($data, [
+            'totalImpuestosRetenidos' => \Respect\Validation\Validator::floatVal(),
+            'totalImpuestosTrasladados' => \Respect\Validation\Validator::floatVal()
+        ]);
 
         if($valid->failed()) {
 
@@ -291,8 +288,8 @@ class Cfdi
         foreach ($data as $key => $value) {
 
             $valid->validate($value, [
-                'totalImpuestosRetenidos' => \Respect\Validation\Validator::notEmpty()->floatVal(),
-                'totalImpuestosTrasladados' => \Respect\Validation\Validator::notEmpty()->floatVal()
+                'impuesto' => \Respect\Validation\Validator::notEmpty(),
+                'importe' => \Respect\Validation\Validator::notEmpty()->floatVal()
             ]);
         }
 
@@ -317,7 +314,7 @@ class Cfdi
         foreach ($data as $key => $value) {
 
             $valid->validate($value, [
-                'impuesto' => \Respect\Validation\Validator::notEmpty()->floatVal(),
+                'impuesto' => \Respect\Validation\Validator::notEmpty(),
                 'tasa' => \Respect\Validation\Validator::notEmpty()->floatVal(),
                 'importe' => \Respect\Validation\Validator::notEmpty()->floatVal()
             ]);
@@ -344,9 +341,11 @@ class Cfdi
         $this->receptor = new Receptor($this->xml, $this->comprobante, $this->datareceptor);
         $this->receptordomicilio = new ReceptorDomicilio($this->xml, $this->receptor, $this->datareceptordomicilio);
         $this->conceptos = new Conceptos($this->xml, $this->comprobante, $this->dataconceptos);
-        $this->impuestos = new Impuestos($this->xml, $this->comprobante, $this->dataimpuestos);
-        $this->impuestosretenciones = new ImpuestosRetenciones($this->xml, $this->impuestos, $this->dataimpuestosretenciones );
-        $this->impuestostraslados = new ImpuestosTraslados($this->xml, $this->impuestos, $this->dataimpuestostrasladados);
+        if(!is_null($this->dataimpuestos)) {
+            $this->impuestos = new Impuestos($this->xml, $this->comprobante, $this->dataimpuestos);
+            $this->impuestosretenciones = new ImpuestosRetenciones($this->xml, $this->impuestos, $this->dataimpuestosretenciones );
+            $this->impuestostraslados = new ImpuestosTraslados($this->xml, $this->impuestos, $this->dataimpuestostrasladados);
+        }
         $this->complemento = new Complemento($this->xml, $this->comprobante);
 
         return $this;
