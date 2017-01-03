@@ -283,6 +283,17 @@ class Cfdi
 	 */
     public function setImpuestosRetenciones(array $data)
     {
+
+        if(is_null($this->dataimpuestos)) {
+
+            $this->errors = [
+                "please setImpuestos node"
+            ]; 
+            $this->valid = false;
+            return $this;
+
+        }
+
         $valid = new \lalocespedes\Validation\ImpuestosRetenciones;
 
         foreach ($data as $key => $value) {
@@ -309,6 +320,17 @@ class Cfdi
 	 */
     public function setImpuestosTrasladados(array $data)
     {
+        
+        if(is_null($this->dataimpuestos)) {
+
+            $this->errors = [
+                "please setImpuestos node"
+            ]; 
+            $this->valid = false;
+            return $this;
+
+        }
+
         $valid = new \lalocespedes\Validation\ImpuestosTrasladados;
 
         foreach ($data as $key => $value) {
@@ -403,9 +425,31 @@ class Cfdi
         $this->conceptos = new Conceptos($this->xml, $this->comprobante, $this->dataconceptos);
 
         if(!is_null($this->dataimpuestos)) {
+
             $this->impuestos = new Impuestos($this->xml, $this->comprobante, $this->dataimpuestos);
-            $this->impuestosretenciones = new ImpuestosRetenciones($this->xml, $this->impuestos, $this->dataimpuestosretenciones );
+
+            if(is_null($this->dataimpuestosretenciones)) {
+
+                $this->errors = [
+                    "please setImpuestosRetenciones node"
+                ]; 
+                $this->valid = false;
+                return $this;
+            }
+
+            $this->impuestosretenciones = new ImpuestosRetenciones($this->xml, $this->impuestos, $this->dataimpuestosretenciones);
+
+            if(is_null($this->dataimpuestostrasladados)) {
+
+                $this->errors = [
+                    "please setImpuestosTrasladados node"
+                ]; 
+                $this->valid = false;
+                return $this;
+            }
+
             $this->impuestostraslados = new ImpuestosTraslados($this->xml, $this->impuestos, $this->dataimpuestostrasladados);
+
         }
         
         $this->complemento = new Complemento($this->xml, $this->comprobante);

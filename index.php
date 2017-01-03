@@ -12,7 +12,7 @@ $invoice['comprobante'] = [
     "serie" => "B",
     "folio" => "10599",
     "fecha" => "111",
-    "formaDePago" => "PAGOENUNASOLAE XHIBICION",
+    "formaDePago" => "PAGO EN UNA SOLA EXHIBICION",
     "subTotal" => "111",
     "descuento" => "22",
     "total" => "22",
@@ -114,4 +114,9 @@ if($cfdi->failed()) {
     return dump(($cfdi->errors()));
 }
 
-dump($cfdi->build()->getXml());
+$xml = $cfdi->build()->getXml();
+
+//sellar xml
+
+
+dump($xml);
