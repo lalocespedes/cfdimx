@@ -42,6 +42,8 @@ class Cfdi
     protected $datareceptordomicilio;
     protected $dataconceptos;
     protected $dataimpuestos;
+    protected $dataimpuestosretenciones;
+    protected $dataimpuestostrasladados;
     protected $xml;
     protected $comprobante;
     protected $emisor;
@@ -256,19 +258,15 @@ class Cfdi
 	 * Sets the data Impuestos
 	 * @param array $data
 	 */
-    public function setImpuesots(array $data)
+    public function setImpuestos(array $data)
     {
         $valid = new \lalocespedes\Validation\Impuestos;
 
         foreach ($data as $key => $value) {
 
             $valid->validate($value, [
-                'cantidad' => \Respect\Validation\Validator::notEmpty()->floatVal(),
-                'unidad' => \Respect\Validation\Validator::notEmpty(),
-                'noIdentificacion' => \Respect\Validation\Validator::stringType(),
-                'descripcion' => \Respect\Validation\Validator::notEmpty(),
-                'valorUnitario' => \Respect\Validation\Validator::notEmpty(),
-                'importe' => \Respect\Validation\Validator::notEmpty()
+                'totalImpuestosRetenidos' => \Respect\Validation\Validator::floatVal(),
+                'totalImpuestosTrasladados' => \Respect\Validation\Validator::floatVal()
             ]);
         }
 
@@ -279,6 +277,59 @@ class Cfdi
         }
         
         $this->dataimpuestos = $data;
+
+    }
+
+    /**
+	 * Sets the data ImpuestosRetenciones
+	 * @param array $data
+	 */
+    public function setImpuestosRetenciones(array $data)
+    {
+        $valid = new \lalocespedes\Validation\ImpuestosRetenciones;
+
+        foreach ($data as $key => $value) {
+
+            $valid->validate($value, [
+                'totalImpuestosRetenidos' => \Respect\Validation\Validator::notEmpty()->floatVal(),
+                'totalImpuestosTrasladados' => \Respect\Validation\Validator::notEmpty()->floatVal()
+            ]);
+        }
+
+        if($valid->failed()) {
+
+            $this->valid = false;
+            return $this->errors = $valid->errors();
+        }
+        
+        $this->dataimpuestosretenciones = $data;
+
+    }
+
+    /**
+	 * Sets the data ImpuestosTrasladados
+	 * @param array $data
+	 */
+    public function setImpuestosTrasladados(array $data)
+    {
+        $valid = new \lalocespedes\Validation\ImpuestosTrasladados;
+
+        foreach ($data as $key => $value) {
+
+            $valid->validate($value, [
+                'impuesto' => \Respect\Validation\Validator::notEmpty()->floatVal(),
+                'tasa' => \Respect\Validation\Validator::notEmpty()->floatVal(),
+                'importe' => \Respect\Validation\Validator::notEmpty()->floatVal()
+            ]);
+        }
+
+        if($valid->failed()) {
+
+            $this->valid = false;
+            return $this->errors = $valid->errors();
+        }
+        
+        $this->dataimpuestostrasladados = $data;
 
     }
 
@@ -294,8 +345,8 @@ class Cfdi
         $this->receptordomicilio = new ReceptorDomicilio($this->xml, $this->receptor, $this->datareceptordomicilio);
         $this->conceptos = new Conceptos($this->xml, $this->comprobante, $this->dataconceptos);
         $this->impuestos = new Impuestos($this->xml, $this->comprobante, $this->dataimpuestos);
-        $this->impuestosretenciones = new ImpuestosRetenciones($this->xml, $this->impuestos);
-        $this->impuestostraslados = new ImpuestosTraslados($this->xml, $this->impuestos);
+        $this->impuestosretenciones = new ImpuestosRetenciones($this->xml, $this->impuestos, $this->dataimpuestosretenciones );
+        $this->impuestostraslados = new ImpuestosTraslados($this->xml, $this->impuestos, $this->dataimpuestostrasladados);
         $this->complemento = new Complemento($this->xml, $this->comprobante);
 
         return $this;

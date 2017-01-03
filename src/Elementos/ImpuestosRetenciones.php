@@ -9,24 +9,13 @@ class ImpuestosRetenciones
 {
     protected $impuestosretenciones;
 
-    function __construct($xml, $impuestos)
+    function __construct($xml, $impuestos, array $data)
     {
         $this->impuestosretenciones = $xml->createElement("cfdi:Retenciones");
 
         $impuestos->appendChild($this->impuestosretenciones);
 
-        $RetencionesArray = [
-            "0" => [
-                "importe" => "1000", // valid format decimals
-                "impuesto" => "IVA"
-            ],
-            "1" => [
-                "importe" => "1100", // valid format decimals
-                "impuesto" => "ISR"
-            ]
-       	];
-
-        foreach ($RetencionesArray as $key => $item) {
+        foreach ($data as $key => $item) {
 
             $retencion = $xml->createElement("cfdi:Retencion");
             $this->impuestosretenciones->appendChild($retencion);

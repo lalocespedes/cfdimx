@@ -9,21 +9,13 @@ class ImpuestosTraslados
 {
     protected $impuestostraslados;
 
-    function __construct($xml, $impuestos)
+    function __construct($xml, $impuestos, array $data)
     {
         $this->impuestostraslados = $xml->createElement("cfdi:Traslados");
 
         $impuestos->appendChild($this->impuestostraslados);
 
-        $RetencionesArray = [
-            "0" => [
-                "tasa" => "16.00", // valid format decimals
-                "importe" => "1000", // valid format decimals
-                "impuesto" => "IVA"
-            ]
-       	];
-
-        foreach ($RetencionesArray as $key => $item) {
+        foreach ($data as $key => $item) {
 
             $traslado = $xml->createElement("cfdi:Traslado");
             $this->impuestostraslados->appendChild($traslado);

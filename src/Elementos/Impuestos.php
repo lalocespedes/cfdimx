@@ -9,18 +9,13 @@ class Impuestos
 {
     protected $impuestos;
 
-    function __construct($xml, $comprobante)
+    function __construct($xml, $comprobante, array $data)
     {
         $this->impuestos = $xml->createElement("cfdi:Impuestos");
 
         $comprobante->appendChild($this->impuestos);
 
-        $attr = [
-			"totalImpuestosRetenidos" => "000", // valid format decimals
-			"totalImpuestosTrasladados" => "000"
-       	];
-
-        foreach ($attr as $key => $val) {
+        foreach ($data as $key => $val) {
 		    $val = preg_replace('/\s\s+/', ' ', $val); // Regla 5a y 5c
 		    $val = trim($val); // Regla 5b
 		    if (strlen($val)>0) { // Regla 6
