@@ -8,7 +8,7 @@ use Respect\Validation\Exceptions\NestedValidationException;
 /**
  * 
  */
-class Complemento
+class Comprobante
 {
     protected $errors = [];
     protected $required;
@@ -53,10 +53,7 @@ class Complemento
          $this->required = [
             "version",
             "fecha",
-            "sello",
             "formaDePago",
-            "noCertificado",
-            "certificado",
             "subTotal",
             "total",
             "tipoDeComprobante",

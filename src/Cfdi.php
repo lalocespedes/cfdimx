@@ -55,6 +55,8 @@ class Cfdi
     protected $impuestosretenciones;
     protected $impuestostraslados;
     protected $complemento;
+    protected $cerfile;
+    protected $keypemfile;
 
     /**
 	 * Sets the data Comprobante
@@ -63,7 +65,7 @@ class Cfdi
 	public function setComprobante(array $data)
 	{
         // valid data
-        $valid = new \lalocespedes\Validation\Complemento;
+        $valid = new \lalocespedes\Validation\Comprobante;
         $valid->validate($data, [
             'version' => \Respect\Validation\Validator::notEmpty()->noWhitespace(),
             'serie' => \Respect\Validation\Validator::length(1, 25),
@@ -352,6 +354,17 @@ class Cfdi
 
     }
 
+    /**
+	* Sets the files Certificado
+	* @param file $cer
+    * @param file $key
+	*/
+    public function setCertificado($cer, $key)
+    {
+        $this->cerfile = $cer;
+        $this->keypemfile = $key;
+    }
+
     public function build()
     {
         $this->xml = new DOMdocument("1.0","UTF-8");
@@ -454,6 +467,23 @@ class Cfdi
         
         $this->complemento = new Complemento($this->xml, $this->comprobante);
 
+        $this->xml->formatOutput = true;
+
+        // sellar xml
+        if(is_null($this->cerfile) || is_null($this->keypemfile)) {
+
+            $this->errors = [
+                "please set setCertificado"
+            ]; 
+            $this->valid = false;
+            return $this;
+
+        }
+
+        $xml = new \lalocespedes\Sello();
+
+        $this->xml = $xml->getSello($this->xml->saveXML(), $this->cerfile, $this->keypemfile);
+
         return $this;
     }
 
@@ -461,8 +491,7 @@ class Cfdi
     {
         if($this->valid) {
             
-            $this->xml->formatOutput = true;
-            return $this->xml->saveXML();
+            return $this->xml;
         }
 
         $this->xml = null;

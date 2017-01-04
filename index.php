@@ -21,10 +21,7 @@ $invoice['comprobante'] = [
     "NumCtaPago" => "1234",
     "Moneda" => "MXN",
     "TipoCambio" => "1",
-    "LugarExpedicion" => "Matehuala, San Luis Potosi",
-    "sello" => "1111",
-    "noCertificado" => "2222",
-    "certificado" => "333"
+    "LugarExpedicion" => "Matehuala, San Luis Potosi"
 ];
 
 $invoice['emisor'] = [
@@ -108,6 +105,7 @@ $cfdi->setConceptos($invoice['conceptos']);
 $cfdi->setImpuestos($invoice['impuestos']);
 $cfdi->setImpuestosRetenciones($invoice['impuestosretenciones']);
 $cfdi->setImpuestosTrasladados($invoice['impuestostrasladados']);
+$cfdi->setCertificado("/Users/arthaleon/AAA010101AAA/20001000000200001437.cer", "/Users/arthaleon/AAA010101AAA/20001000000200001437.key.pem");
 
 if($cfdi->failed()) {
 
@@ -115,8 +113,5 @@ if($cfdi->failed()) {
 }
 
 $xml = $cfdi->build()->getXml();
-
-//sellar xml
-
 
 dump($xml);
