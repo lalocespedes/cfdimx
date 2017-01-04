@@ -11,7 +11,7 @@ $invoice['comprobante'] = [
     "version" => "3.2",
     "serie" => "B",
     "folio" => "10599",
-    "fecha" => "111",
+    "fecha" => "2017-01-05T12:58:00",
     "formaDePago" => "PAGO EN UNA SOLA EXHIBICION",
     "subTotal" => "111",
     "descuento" => "22",
@@ -25,7 +25,7 @@ $invoice['comprobante'] = [
 ];
 
 $invoice['emisor'] = [
-    "rfc" => "CANN780217",
+    "rfc" => "CANN780217KC9",
     "nombre" => "aassdfff"
 ];
 
@@ -42,7 +42,7 @@ $invoice['regimenfiscal'] = [
 ];
 
 $invoice['receptor'] = [
-    "rfc" => "RNP721026",
+    "rfc" => "RNP721026KZ2",
     "nombre" => "REFA"
 ];
 
@@ -105,7 +105,7 @@ $cfdi->setConceptos($invoice['conceptos']);
 $cfdi->setImpuestos($invoice['impuestos']);
 $cfdi->setImpuestosRetenciones($invoice['impuestosretenciones']);
 $cfdi->setImpuestosTrasladados($invoice['impuestostrasladados']);
-$cfdi->setCertificado("/Users/arthaleon/AAA010101AAA/20001000000200001437.cer", "/Users/arthaleon/AAA010101AAA/20001000000200001437.key.pem");
+$cfdi->setCertificado("/home/lalocespedes/trusty/timbradoindisoft/storage/csds/AAA010101AAA/20001000000200001437.cer", "/Users/arthaleon/AAA010101AAA/20001000000200001437.key.pem");
 
 if($cfdi->failed()) {
 

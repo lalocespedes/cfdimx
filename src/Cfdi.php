@@ -58,6 +58,11 @@ class Cfdi
     protected $cerfile;
     protected $keypemfile;
 
+    public function __construct()
+    {
+        v::with('lalocespedes\\Validation\\Rules\\');
+    }
+
     /**
 	 * Sets the data Comprobante
 	 * @param array $data
@@ -67,29 +72,29 @@ class Cfdi
         // valid data
         $valid = new \lalocespedes\Validation\Comprobante;
         $valid->validate($data, [
-            'version' => \Respect\Validation\Validator::notEmpty()->noWhitespace(),
-            'serie' => \Respect\Validation\Validator::length(1, 25),
-            'folio' => \Respect\Validation\Validator::length(1, 20),
-            'fecha' => \Respect\Validation\Validator::notEmpty(),
-            'sello' => \Respect\Validation\Validator::notEmpty(),
-            'formaDePago' => \Respect\Validation\Validator::notEmpty(),
-            'noCertificado' => \Respect\Validation\Validator::notEmpty()->length(1, 20),
-            'certificado' => \Respect\Validation\Validator::notEmpty()->length(1, 20),
-            'condicionesDePago' => \Respect\Validation\Validator::length(1, 100),
-            'subTotal' => \Respect\Validation\Validator::notEmpty()->floatVal(),
-            'descuento' => \Respect\Validation\Validator::floatVal(),
-            'motivoDescuento' => \Respect\Validation\Validator::alpha(),
-            'TipoCambio' => \Respect\Validation\Validator::floatVal(),
-            'Moneda' => \Respect\Validation\Validator::alpha(),
-            'total' => \Respect\Validation\Validator::notEmpty()->floatVal(),
-            'tipoDeComprobante' => \Respect\Validation\Validator::notEmpty()->alpha(),
-            'metodoDePago' => \Respect\Validation\Validator::notEmpty()->alpha(),
-            'LugarExpedicion' => \Respect\Validation\Validator::notEmpty(),
-            'NumCtaPago' => \Respect\Validation\Validator::noWhitespace()->min(4),
-            'FolioFiscalOrig' => \Respect\Validation\Validator::noWhitespace(),
-            'SerieFolioFiscalOrig' => \Respect\Validation\Validator::noWhitespace(),
-            'FechaFolioFiscalOrig' => \Respect\Validation\Validator::noWhitespace(),
-            'MontoFolioFiscalOrig' => \Respect\Validation\Validator::noWhitespace()->floatVal()
+            'version' => v::notEmpty()->noWhitespace(),
+            'serie' => v::length(1, 25),
+            'folio' => v::length(1, 20),
+            'fecha' => v::notEmpty()->date('Y-m-d\TH:i:s')->dateValid(),
+            'sello' => v::notEmpty(),
+            'formaDePago' => v::notEmpty(),
+            'noCertificado' => v::notEmpty()->length(1, 20),
+            'certificado' => v::notEmpty()->length(1, 20),
+            'condicionesDePago' => v::length(1, 100),
+            'subTotal' => v::notEmpty()->floatVal(),
+            'descuento' => v::floatVal(),
+            'motivoDescuento' => v::alpha(),
+            'TipoCambio' => v::floatVal(),
+            'Moneda' => v::alpha(),
+            'total' => v::notEmpty()->floatVal(),
+            'tipoDeComprobante' => v::notEmpty()->alpha(),
+            'metodoDePago' => v::notEmpty()->alpha(),
+            'LugarExpedicion' => v::notEmpty(),
+            'NumCtaPago' => v::noWhitespace()->min(4),
+            'FolioFiscalOrig' => v::noWhitespace(),
+            'SerieFolioFiscalOrig' => v::noWhitespace(),
+            'FechaFolioFiscalOrig' => v::noWhitespace(),
+            'MontoFolioFiscalOrig' => v::noWhitespace()->floatVal()
         ]);
 
         if($valid->failed()) {
@@ -110,8 +115,8 @@ class Cfdi
         // Valid data
         $valid = new \lalocespedes\Validation\Emisor;
         $valid->validate($data, [
-            'rfc' => \Respect\Validation\Validator::notEmpty(),
-            'nombre' => \Respect\Validation\Validator::stringType()
+            'rfc' => v::noWhitespace()->notEmpty()->RFCValid(),
+            'nombre' => v::stringType()
         ]);
 
         if($valid->failed()) {
@@ -131,16 +136,16 @@ class Cfdi
 	{
         $valid = new \lalocespedes\Validation\EmisorDomicilioFiscal;
         $valid->validate($data, [
-            'calle' => \Respect\Validation\Validator::notEmpty(),
-            'noExterior' => \Respect\Validation\Validator::stringType(),
-            'noInterior' => \Respect\Validation\Validator::stringType(),
-            'colonia' => \Respect\Validation\Validator::stringType(),
-            'localidad' => \Respect\Validation\Validator::stringType(),
-            'referencia' => \Respect\Validation\Validator::stringType(),
-            'municipio' => \Respect\Validation\Validator::notEmpty()->stringType(),
-            'estado' => \Respect\Validation\Validator::notEmpty()->stringType(),
-            'pais' => \Respect\Validation\Validator::notEmpty()->stringType(),
-            'codigoPostal' => \Respect\Validation\Validator::notEmpty()->stringType(),
+            'calle' => v::notEmpty(),
+            'noExterior' => v::stringType(),
+            'noInterior' => v::stringType(),
+            'colonia' => v::stringType(),
+            'localidad' => v::stringType(),
+            'referencia' => v::stringType(),
+            'municipio' => v::notEmpty()->stringType(),
+            'estado' => v::notEmpty()->stringType(),
+            'pais' => v::notEmpty()->stringType(),
+            'codigoPostal' => v::notEmpty()->stringType(),
         ]);
 
         if($valid->failed()) {
@@ -161,7 +166,7 @@ class Cfdi
     {
         $valid = new \lalocespedes\Validation\RegimenFiscal;
         $valid->validate($data, [
-            'Regimen' => \Respect\Validation\Validator::notEmpty()
+            'Regimen' => v::notEmpty()
         ]);
 
         if($valid->failed()) {
@@ -182,8 +187,8 @@ class Cfdi
     {
         $valid = new \lalocespedes\Validation\Receptor;
         $valid->validate($data, [
-            'rfc' => \Respect\Validation\Validator::notEmpty(),
-            'nombre' => \Respect\Validation\Validator::stringType()
+            'rfc' => v::noWhitespace()->notEmpty()->RFCValid(),
+            'nombre' => v::stringType()
         ]);
 
         if($valid->failed()) {
@@ -204,16 +209,16 @@ class Cfdi
     {
         $valid = new \lalocespedes\Validation\ReceptorDomicilio;
         $valid->validate($data, [
-            'calle' => \Respect\Validation\Validator::notEmpty(),
-            'noExterior' => \Respect\Validation\Validator::stringType(),
-            'noInterior' => \Respect\Validation\Validator::stringType(),
-            'colonia' => \Respect\Validation\Validator::stringType(),
-            'localidad' => \Respect\Validation\Validator::stringType(),
-            'referencia' => \Respect\Validation\Validator::stringType(),
-            'municipio' => \Respect\Validation\Validator::notEmpty()->stringType(),
-            'estado' => \Respect\Validation\Validator::notEmpty()->stringType(),
-            'pais' => \Respect\Validation\Validator::notEmpty()->stringType(),
-            'codigoPostal' => \Respect\Validation\Validator::notEmpty()->stringType(),
+            'calle' => v::notEmpty(),
+            'noExterior' => v::stringType(),
+            'noInterior' => v::stringType(),
+            'colonia' => v::stringType(),
+            'localidad' => v::stringType(),
+            'referencia' => v::stringType(),
+            'municipio' => v::notEmpty()->stringType(),
+            'estado' => v::notEmpty()->stringType(),
+            'pais' => v::notEmpty()->stringType(),
+            'codigoPostal' => v::notEmpty()->stringType(),
         ]);
 
         if($valid->failed()) {
@@ -237,12 +242,12 @@ class Cfdi
         foreach ($data as $key => $value) {
 
             $valid->validate($value, [
-                'cantidad' => \Respect\Validation\Validator::notEmpty()->floatVal(),
-                'unidad' => \Respect\Validation\Validator::notEmpty(),
-                'noIdentificacion' => \Respect\Validation\Validator::stringType(),
-                'descripcion' => \Respect\Validation\Validator::notEmpty(),
-                'valorUnitario' => \Respect\Validation\Validator::notEmpty(),
-                'importe' => \Respect\Validation\Validator::notEmpty()
+                'cantidad' => v::notEmpty()->floatVal(),
+                'unidad' => v::notEmpty(),
+                'noIdentificacion' => v::stringType(),
+                'descripcion' => v::notEmpty(),
+                'valorUnitario' => v::notEmpty(),
+                'importe' => v::notEmpty()
             ]);
         }
 
@@ -265,8 +270,8 @@ class Cfdi
         $valid = new \lalocespedes\Validation\Impuestos;
 
         $valid->validate($data, [
-            'totalImpuestosRetenidos' => \Respect\Validation\Validator::floatVal(),
-            'totalImpuestosTrasladados' => \Respect\Validation\Validator::floatVal()
+            'totalImpuestosRetenidos' => v::floatVal(),
+            'totalImpuestosTrasladados' => v::floatVal()
         ]);
 
         if($valid->failed()) {
@@ -301,8 +306,8 @@ class Cfdi
         foreach ($data as $key => $value) {
 
             $valid->validate($value, [
-                'impuesto' => \Respect\Validation\Validator::notEmpty(),
-                'importe' => \Respect\Validation\Validator::notEmpty()->floatVal()
+                'impuesto' => v::notEmpty(),
+                'importe' => v::notEmpty()->floatVal()
             ]);
         }
 
@@ -338,9 +343,9 @@ class Cfdi
         foreach ($data as $key => $value) {
 
             $valid->validate($value, [
-                'impuesto' => \Respect\Validation\Validator::notEmpty(),
-                'tasa' => \Respect\Validation\Validator::notEmpty()->floatVal(),
-                'importe' => \Respect\Validation\Validator::notEmpty()->floatVal()
+                'impuesto' => v::notEmpty(),
+                'tasa' => v::notEmpty()->floatVal(),
+                'importe' => v::notEmpty()->floatVal()
             ]);
         }
 
@@ -480,9 +485,27 @@ class Cfdi
 
         }
 
+        //Get CSD
+        try {
+            
+            $csd = new \lalocespedes\Csd(dirname($this->cerfile));
+            $this->cerfilecontent = $csd->getCer(basename($this->cerfile));
+            $this->keypemfilecontent = $csd->getKeyPem(basename($this->keypemfile));
+            $this->noCertificado = $csd->getnoCertificado($this->cerfile);
+
+        } catch ( \League\Flysystem\FileNotFoundException $e) {
+
+            $this->errors = [
+                $e->getMessage()
+            ]; 
+            $this->valid = false;
+            return $this;
+
+        }
+
         $xml = new \lalocespedes\Sello();
 
-        $this->xml = $xml->getSello($this->xml->saveXML(), $this->cerfile, $this->keypemfile);
+        $this->xml = $xml->getSello($this->xml->saveXML(), $this->cerfilecontent, $this->keypemfilecontent, $this->noCertificado);
 
         return $this;
     }
