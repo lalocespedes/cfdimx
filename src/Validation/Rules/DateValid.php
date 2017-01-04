@@ -16,6 +16,7 @@ class DateValid extends AbstractRule
 
         }
 
+        // no date future
         if(new \DateTime($input) > \Carbon\Carbon::now()) {
 
             return false;
