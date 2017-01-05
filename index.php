@@ -11,12 +11,12 @@ $invoice['comprobante'] = [
     "version" => "3.2",
     "serie" => "B",
     "folio" => "10599",
-    "fecha" => "2017-01-01T13:40",
+    "fecha" => "2017-01-04T13:40:00",
     "formaDePago" => "PAGO EN UNA SOLA EXHIBICION",
     "subTotal" => "111",
     "descuento" => "22",
     "total" => "22",
-    "tipoDeComprobante" => "INGRESO",
+    "tipoDeComprobante" => "ingreso",
     "metodoDePago" => "EFE",
     "NumCtaPago" => "1234",
     "Moneda" => "MXN",
@@ -105,7 +105,7 @@ $cfdi->setConceptos($invoice['conceptos']);
 $cfdi->setImpuestos($invoice['impuestos']);
 $cfdi->setImpuestosRetenciones($invoice['impuestosretenciones']);
 $cfdi->setImpuestosTrasladados($invoice['impuestostrasladados']);
-$cfdi->setCertificado("/home/lalocespedes/trusty/timbradoindisoft/storage/csds/AAA010101AAA/20001000000200001437.cer", "/Users/arthaleon/AAA010101AAA/20001000000200001437.key.pem");
+$cfdi->setCertificado("/home/user/dev/timbradoindisoft/storage/csds/AAA010101AAA/20001000000200001437.cer", "/home/user/dev/timbradoindisoft/storage/csds/AAA010101AAA/20001000000200001437.key.pem");
 
 if($cfdi->failed()) {
 

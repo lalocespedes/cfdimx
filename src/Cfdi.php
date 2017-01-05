@@ -87,7 +87,7 @@ class Cfdi
             'TipoCambio' => v::floatVal(),
             'Moneda' => v::alpha(),
             'total' => v::notEmpty()->floatVal(),
-            'tipoDeComprobante' => v::notEmpty()->alpha(),
+            'tipoDeComprobante' => v::notEmpty()->stringType()->TipoDeComprobanteValid(),
             'metodoDePago' => v::notEmpty()->alpha(),
             'LugarExpedicion' => v::notEmpty(),
             'NumCtaPago' => v::noWhitespace()->min(4),
@@ -488,6 +488,22 @@ class Cfdi
         //Get CSD
         try {
             
+            if (!file_exists($this->cerfile)) {
+                $this->errors = [
+                    "cer file not found"
+                ]; 
+                $this->valid = false;
+                return $this;
+            }
+
+            if (!file_exists($this->keypemfile)) {
+                $this->errors = [
+                    "key.pem file not found"
+                ]; 
+                $this->valid = false;
+                return $this;
+            }
+
             $csd = new \lalocespedes\Csd(dirname($this->cerfile));
             $this->cerfilecontent = $csd->getCer(basename($this->cerfile));
             $this->keypemfilecontent = $csd->getKeyPem(basename($this->keypemfile));
