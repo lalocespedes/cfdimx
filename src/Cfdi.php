@@ -4,17 +4,17 @@ namespace lalocespedes;
 
 use DOMDocument;
 
-use lalocespedes\Elementos\Comprobante;
-use lalocespedes\Elementos\Emisor;
-use lalocespedes\Elementos\DomicilioFiscal;
-use lalocespedes\Elementos\RegimenFiscal;
-use lalocespedes\Elementos\Receptor;
-use lalocespedes\Elementos\ReceptorDomicilio;
-use lalocespedes\Elementos\Conceptos;
-use lalocespedes\Elementos\Impuestos;
-use lalocespedes\Elementos\ImpuestosRetenciones;
-use lalocespedes\Elementos\ImpuestosTraslados;
-use lalocespedes\Elementos\Complemento;
+use lalocespedes\Elementos\Cfdi\Comprobante;
+use lalocespedes\Elementos\Cfdi\Emisor;
+use lalocespedes\Elementos\Cfdi\DomicilioFiscal;
+use lalocespedes\Elementos\Cfdi\RegimenFiscal;
+use lalocespedes\Elementos\Cfdi\Receptor;
+use lalocespedes\Elementos\Cfdi\ReceptorDomicilio;
+use lalocespedes\Elementos\Cfdi\Conceptos;
+use lalocespedes\Elementos\Cfdi\Impuestos;
+use lalocespedes\Elementos\Cfdi\ImpuestosRetenciones;
+use lalocespedes\Elementos\Cfdi\ImpuestosTraslados;
+use lalocespedes\Elementos\Cfdi\Complemento;
 
 use lalocespedes\Exceptions\CfdiException;
 use Respect\Validation\Validator as v;

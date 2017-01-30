@@ -4,6 +4,7 @@ namespace lalocespedes;
 
 use XSLTProcessor;
 use DOMDocument;
+use SimpleXMLElement;
 
 /**
  * 
@@ -26,8 +27,11 @@ class Sello
         $xml = new DomDocument;
         $xml->loadXML(utf8_decode($this->xml)) or die("XML invalido");
 
+        $sxe = new SimpleXMLElement($this->xml);
+        $namespaces = $sxe->getNamespaces(true);
+
         $XSL = new DOMDocument;
-        $XSL->load( __DIR__ . '/utils/xslt32/cadenaoriginal_3_2.xslt');
+        $XSL->load( __DIR__ . '/utils/xsltretenciones/retenciones.xslt');
 
         $proc = new XSLTProcessor;
         $proc->importStyleSheet($XSL);
@@ -38,10 +42,23 @@ class Sello
 
         $sello = base64_encode($sig);
 
-        $c = $xml->getElementsByTagNameNS('http://www.sat.gob.mx/cfd/3', 'Comprobante')->item(0);
-        $c->setAttribute('sello', $sello);
-        $c->setAttribute('certificado', $certificado);
-        $c->setAttribute('noCertificado', $noCertificado);
+        $c = $xml->getElementsByTagNameNS(array_values($namespaces)[0], ucfirst(array_keys($namespaces)[0]))->item(0);
+
+        if($c->prefix == "retenciones") {
+
+            $c->setAttribute('Sello', $sello);
+            $c->setAttribute('Cert', $certificado);
+            $c->setAttribute('NumCert', $noCertificado);
+
+        }
+
+        if($c->prefix == "cfdi") {
+
+            $c->setAttribute('sello', $sello);
+            $c->setAttribute('certificado', $certificado);
+            $c->setAttribute('noCertificado', $noCertificado);
+
+        }
 
         return $xml->saveXML();
     }
