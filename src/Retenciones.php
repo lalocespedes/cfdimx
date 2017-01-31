@@ -4,6 +4,14 @@ namespace lalocespedes;
 
 use DOMDocument;
 
+use lalocespedes\Elementos\Retenciones\Retenciones as Retenc;
+use lalocespedes\Elementos\Retenciones\Emisor;
+use lalocespedes\Elementos\Retenciones\Receptor;
+use lalocespedes\Elementos\Retenciones\Periodo;
+use lalocespedes\Elementos\Retenciones\Totales;
+use lalocespedes\Elementos\Retenciones\Complemento;
+
+use Respect\Validation\Validator as v;
 /**
  * 
  */
@@ -43,6 +51,8 @@ class Retenciones
 	*/
 	public function setRetenciones(array $data = [])
 	{
+        $valid = new \lalocespedes\Validation\Retenciones;
+
         $this->dataretenciones = $data;
     }
 
@@ -52,12 +62,12 @@ class Retenciones
 	*/
 	public function setEmisor(array $data)
 	{
-        // // Valid data
-        // $valid = new \lalocespedes\Validation\Emisor;
-        // $valid->validate($data, [
-        //     'rfc' => v::noWhitespace()->notEmpty()->RFCValid(),
-        //     'nombre' => v::stringType()
-        // ]);
+        // Valid data
+        $valid = new \lalocespedes\Validation\Emisor;
+        $valid->validate($data, [
+            'rfc' => v::noWhitespace()->notEmpty()->RFCValid(),
+            'nombre' => v::stringType()
+        ]);
 
         // if($valid->failed()) {
 
@@ -162,18 +172,18 @@ class Retenciones
             return $this;
         }
 
-        $this->retenciones = new \lalocespedes\Elementos\Retenciones\Retenciones($this->xml, $this->dataretenciones);
+        $this->retenciones = new Retenc($this->xml, $this->dataretenciones);
 
-        $this->emisor = new \lalocespedes\Elementos\Retenciones\Emisor($this->xml, $this->retenciones, $this->dataemisor);
+        $this->emisor = new Emisor($this->xml, $this->retenciones, $this->dataemisor);
 
-        $this->receptor = new \lalocespedes\Elementos\Retenciones\Receptor($this->xml, $this->retenciones, $this->datareceptor);
+        $this->receptor = new Receptor($this->xml, $this->retenciones, $this->datareceptor);
 
-        $this->periodo = new \lalocespedes\Elementos\Retenciones\Periodo($this->xml, $this->retenciones, $this->dataperiodo);
+        $this->periodo = new Periodo($this->xml, $this->retenciones, $this->dataperiodo);
 
-        $this->totales = new \lalocespedes\Elementos\Retenciones\Totales($this->xml, $this->retenciones, $this->datatotales, $this->dataimpretenidos);
+        $this->totales = new Totales($this->xml, $this->retenciones, $this->datatotales, $this->dataimpretenidos);
 
         if(!is_null($this->datacomplemento)) {
-            $this->complemento = new \lalocespedes\Elementos\Retenciones\Complemento($this->xml, $this->retenciones, $this->datacomplemento);
+            $this->complemento = new Complemento($this->xml, $this->retenciones, $this->datacomplemento);
         }
 
         //////////////////////////////////////////////////////
