@@ -1,25 +1,33 @@
 <?php
 
-namespace lalocespedes\Validation;
+namespace lalocespedes\Cfdimx\Validation;
 
 use Respect\Validation\Validator as Respect;
 use Respect\Validation\Exceptions\NestedValidationException;
 
 class Validator
 {
-    protected $errors;
+    protected $errors = [];
 
     public function validate(array $array, array $rules)
     {
-       foreach ($rules as $field => $rule) {
-           
-           try {
-               $rule->setName(ucfirst($field))->assert($array[$field]);
-           }catch (NestedValidationException $e) {
-               $this->errors[$field] = $e->getMessages();
-           }
+        if(!count($array)) {
+            
+            $this->errors = ["No hay datos q validar"];
+            return $this;
+        }
+        
+        foreach ($rules as $field => $rule) {
+            
+            try {
+                
+                $rule->setName(ucfirst($field))->assert($array[$field]);
+                
+            } catch (NestedValidationException $e) {
 
-       }
+                $this->errors[$field] = $e->getMessages();        
+            }
+        }
 
        return $this;
     }

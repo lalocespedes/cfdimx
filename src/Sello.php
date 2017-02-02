@@ -1,6 +1,6 @@
 <?php
 
-namespace lalocespedes;
+namespace lalocespedes\Cfdimx;
 
 use XSLTProcessor;
 use DOMDocument;

@@ -1,6 +1,6 @@
 <?php
 
-namespace lalocespedes\Validation\Exceptions;
+namespace lalocespedes\Cfdimx\Validation\Exceptions;
 
 use Respect\Validation\Exceptions\ValidationException;
 

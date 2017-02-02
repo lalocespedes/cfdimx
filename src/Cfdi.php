@@ -1,22 +1,22 @@
 <?php
 
-namespace lalocespedes;
+namespace lalocespedes\Cfdimx;
 
 use DOMDocument;
 
-use lalocespedes\Elementos\Cfdi\Comprobante;
-use lalocespedes\Elementos\Cfdi\Emisor;
-use lalocespedes\Elementos\Cfdi\DomicilioFiscal;
-use lalocespedes\Elementos\Cfdi\RegimenFiscal;
-use lalocespedes\Elementos\Cfdi\Receptor;
-use lalocespedes\Elementos\Cfdi\ReceptorDomicilio;
-use lalocespedes\Elementos\Cfdi\Conceptos;
-use lalocespedes\Elementos\Cfdi\Impuestos;
-use lalocespedes\Elementos\Cfdi\ImpuestosRetenciones;
-use lalocespedes\Elementos\Cfdi\ImpuestosTraslados;
-use lalocespedes\Elementos\Cfdi\Complemento;
+use lalocespedes\Cfdimx\Elementos\Cfdi\Comprobante;
+use lalocespedes\Cfdimx\Elementos\Cfdi\Emisor;
+use lalocespedes\Cfdimx\Elementos\Cfdi\DomicilioFiscal;
+use lalocespedes\Cfdimx\Elementos\Cfdi\RegimenFiscal;
+use lalocespedes\Cfdimx\Elementos\Cfdi\Receptor;
+use lalocespedes\Cfdimx\Elementos\Cfdi\ReceptorDomicilio;
+use lalocespedes\Cfdimx\Elementos\Cfdi\Conceptos;
+use lalocespedes\Cfdimx\Elementos\Cfdi\Impuestos;
+use lalocespedes\Cfdimx\Elementos\Cfdi\ImpuestosRetenciones;
+use lalocespedes\Cfdimx\Elementos\Cfdi\ImpuestosTraslados;
+use lalocespedes\Cfdimx\Elementos\Cfdi\Complemento;
 
-use lalocespedes\Exceptions\CfdiException;
+use lalocespedes\Cfdimx\Exceptions\CfdiException;
 use Respect\Validation\Validator as v;
 
 /**
@@ -60,7 +60,7 @@ class Cfdi
 
     public function __construct()
     {
-        v::with('lalocespedes\\Validation\\Rules\\');
+        v::with('lalocespedes\\Cfdimx\\Validation\\Rules\\');
     }
 
     /**
@@ -70,7 +70,7 @@ class Cfdi
 	public function setComprobante(array $data)
 	{
         // valid data
-        $valid = new \lalocespedes\Validation\Comprobante;
+        $valid = new \lalocespedes\Cfdimx\Validation\Comprobante;
         $valid->validate($data, [
             'version' => v::notEmpty()->noWhitespace(),
             'serie' => v::length(1, 25),
@@ -113,7 +113,7 @@ class Cfdi
 	public function setEmisor(array $data)
 	{
         // Valid data
-        $valid = new \lalocespedes\Validation\Emisor;
+        $valid = new \lalocespedes\Cfdimx\Validation\Emisor;
         $valid->validate($data, [
             'rfc' => v::noWhitespace()->notEmpty()->RFCValid(),
             'nombre' => v::stringType()
@@ -134,7 +134,7 @@ class Cfdi
 	 */
 	public function setEmisorDomicilioFiscal(array $data)
 	{
-        $valid = new \lalocespedes\Validation\EmisorDomicilioFiscal;
+        $valid = new \lalocespedes\Cfdimx\Validation\EmisorDomicilioFiscal;
         $valid->validate($data, [
             'calle' => v::notEmpty(),
             'noExterior' => v::stringType(),
@@ -164,7 +164,7 @@ class Cfdi
 	 */
     public function setRegimenFiscal(array $data)
     {
-        $valid = new \lalocespedes\Validation\RegimenFiscal;
+        $valid = new \lalocespedes\Cfdimx\Validation\RegimenFiscal;
         $valid->validate($data, [
             'Regimen' => v::notEmpty()
         ]);
@@ -185,7 +185,7 @@ class Cfdi
 	 */
     public function setReceptor(array $data)
     {
-        $valid = new \lalocespedes\Validation\Receptor;
+        $valid = new \lalocespedes\Cfdimx\Validation\Receptor;
         $valid->validate($data, [
             'rfc' => v::noWhitespace()->notEmpty()->RFCValid(),
             'nombre' => v::stringType()
@@ -207,7 +207,7 @@ class Cfdi
 	 */
     public function setReceptorDomicilio(array $data)
     {
-        $valid = new \lalocespedes\Validation\ReceptorDomicilio;
+        $valid = new \lalocespedes\Cfdimx\Validation\ReceptorDomicilio;
         $valid->validate($data, [
             'calle' => v::notEmpty(),
             'noExterior' => v::stringType(),
@@ -237,7 +237,7 @@ class Cfdi
 	 */
     public function setConceptos(array $data)
     {
-        $valid = new \lalocespedes\Validation\Conceptos;
+        $valid = new \lalocespedes\Cfdimx\Validation\Conceptos;
 
         foreach ($data as $key => $value) {
 
@@ -267,7 +267,7 @@ class Cfdi
 	 */
     public function setImpuestos(array $data)
     {
-        $valid = new \lalocespedes\Validation\Impuestos;
+        $valid = new \lalocespedes\Cfdimx\Validation\Impuestos;
 
         $valid->validate($data, [
             'totalImpuestosRetenidos' => v::floatVal(),
@@ -301,7 +301,7 @@ class Cfdi
 
         }
 
-        $valid = new \lalocespedes\Validation\ImpuestosRetenciones;
+        $valid = new \lalocespedes\Cfdimx\Validation\ImpuestosRetenciones;
 
         foreach ($data as $key => $value) {
 
@@ -338,7 +338,7 @@ class Cfdi
 
         }
 
-        $valid = new \lalocespedes\Validation\ImpuestosTrasladados;
+        $valid = new \lalocespedes\Cfdimx\Validation\ImpuestosTrasladados;
 
         foreach ($data as $key => $value) {
 
@@ -504,7 +504,7 @@ class Cfdi
                 return $this;
             }
 
-            $csd = new \lalocespedes\Csd(dirname($this->cerfile));
+            $csd = new \lalocespedes\Cfdimx\Csd(dirname($this->cerfile));
             $this->cerfilecontent = $csd->getCer(basename($this->cerfile));
             $this->keypemfilecontent = $csd->getKeyPem(basename($this->keypemfile));
             $this->noCertificado = $csd->getnoCertificado($this->cerfile);
@@ -519,7 +519,7 @@ class Cfdi
 
         }
 
-        $xml = new \lalocespedes\Sello();
+        $xml = new \lalocespedes\Cfdimx\Sello();
 
         $this->xml = $xml->getSello($this->xml->saveXML(), $this->cerfilecontent, $this->keypemfilecontent, $this->noCertificado);
 

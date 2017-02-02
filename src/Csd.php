@@ -1,6 +1,6 @@
 <?php
 
-namespace lalocespedes;
+namespace lalocespedes\Cfdimx;
 
 use League\Flysystem\Filesystem;
 use League\Flysystem\Adapter\Local;

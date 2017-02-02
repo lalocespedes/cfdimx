@@ -1,6 +1,6 @@
 <?php
 
-namespace lalocespedes\Validation\Rules;
+namespace lalocespedes\Cfdimx\Validation\Rules;
 
 use Respect\Validation\Rules\AbstractRule;
 

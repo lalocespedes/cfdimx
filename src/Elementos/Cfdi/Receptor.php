@@ -1,6 +1,6 @@
 <?php
 
-namespace lalocespedes\Elementos\Cfdi;
+namespace lalocespedes\Cfdimx\Elementos\Cfdi;
 
 /**
  * 

@@ -1,6 +1,6 @@
 <?php 
 
-namespace lalocespedes\Exceptions;
+namespace lalocespedes\Cfdimx\Exceptions;
 
 use Exception;
 

@@ -1,15 +1,15 @@
 <?php
 
-namespace lalocespedes;
+namespace lalocespedes\Cfdimx;
 
 use DOMDocument;
 
-use lalocespedes\Elementos\Retenciones\Retenciones as Retenc;
-use lalocespedes\Elementos\Retenciones\Emisor;
-use lalocespedes\Elementos\Retenciones\Receptor;
-use lalocespedes\Elementos\Retenciones\Periodo;
-use lalocespedes\Elementos\Retenciones\Totales;
-use lalocespedes\Elementos\Retenciones\Complemento;
+use lalocespedes\Cfdimx\Elementos\Retenciones\Retenciones as Retenc;
+use lalocespedes\Cfdimx\Elementos\Retenciones\Emisor;
+use lalocespedes\Cfdimx\Elementos\Retenciones\Receptor;
+use lalocespedes\Cfdimx\Elementos\Retenciones\Periodo;
+use lalocespedes\Cfdimx\Elementos\Retenciones\Totales;
+use lalocespedes\Cfdimx\Elementos\Retenciones\Complemento;
 
 use Respect\Validation\Validator as v;
 /**
@@ -51,7 +51,7 @@ class Retenciones
 	*/
 	public function setRetenciones(array $data = [])
 	{
-        $valid = new \lalocespedes\Validation\Retenciones;
+        $valid = new \lalocespedes\Cfdimx\Validation\Retenciones;
 
         $this->dataretenciones = $data;
     }
@@ -63,7 +63,7 @@ class Retenciones
 	public function setEmisor(array $data)
 	{
         // Valid data
-        $valid = new \lalocespedes\Validation\Emisor;
+        $valid = new \lalocespedes\Cfdimx\Validation\Emisor;
         $valid->validate($data, [
             'rfc' => v::noWhitespace()->notEmpty()->RFCValid(),
             'nombre' => v::stringType()
@@ -84,7 +84,7 @@ class Retenciones
 	*/
     public function setReceptor(array $data)
     {
-        // $valid = new \lalocespedes\Validation\Receptor;
+        // $valid = new \lalocespedes\Cfdimx\Validation\Receptor;
         // $valid->validate($data, [
         //     'rfc' => v::noWhitespace()->notEmpty()->RFCValid(),
         //     'nombre' => v::stringType()
@@ -106,7 +106,7 @@ class Retenciones
 	*/
     public function setPeriodo(array $data)
     {
-        // $valid = new \lalocespedes\Validation\Receptor;
+        // $valid = new \lalocespedes\Cfdimx\Validation\Receptor;
         // $valid->validate($data, [
         //     'rfc' => v::noWhitespace()->notEmpty()->RFCValid(),
         //     'nombre' => v::stringType()
@@ -217,7 +217,7 @@ class Retenciones
                 return $this;
             }
 
-            $csd = new \lalocespedes\Csd(dirname($this->cerfile));
+            $csd = new \lalocespedes\Cfdimx\Csd(dirname($this->cerfile));
             $this->cerfilecontent = $csd->getCer(basename($this->cerfile));
             $this->keypemfilecontent = $csd->getKeyPem(basename($this->keypemfile));
             $this->noCertificado = $csd->getnoCertificado($this->cerfile);
@@ -230,7 +230,7 @@ class Retenciones
             return $this;
         }
         
-        $sello = new \lalocespedes\Sello();
+        $sello = new \lalocespedes\Cfdimx\Sello();
         $this->xml = $sello->getSello($this->xml->saveXML(), $this->cerfilecontent, $this->keypemfilecontent, $this->noCertificado);
 
         return $this;

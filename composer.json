@@ -17,7 +17,7 @@
     ],
     "autoload": {
         "psr-4": {
-            "lalocespedes\\": "src/"
+            "lalocespedes\\Cfdimx\\": "src/"
         }
     },
     "require-dev": {

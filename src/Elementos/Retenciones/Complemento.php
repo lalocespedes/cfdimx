@@ -1,6 +1,6 @@
 <?php
 
-namespace lalocespedes\Elementos\Retenciones;
+namespace lalocespedes\Cfdimx\Elementos\Retenciones;
 
 /**
  * 

@@ -1,6 +1,6 @@
 <?php
 
-namespace lalocespedes\Validation;
+namespace lalocespedes\Cfdimx\Validation;
 
 use Respect\Validation\Validator as Respect;
 use Respect\Validation\Exceptions\NestedValidationException;
@@ -16,7 +16,8 @@ class ImpuestosTrasladados
     public function validate(array $array, array $rules)
     {
         if(!count($array)) {
-            return $this->errors = ["setImpuestosTrasladados esta vacio"];
+            $this->errors = ["setImpuestosTrasladados esta vacio"];
+            return $this;
         }
 
         $this->required($array);
