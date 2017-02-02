@@ -45,6 +45,11 @@ class Retenciones
     protected $dataimpretenidos;
     protected $datacomplemento;
 
+    public function __construct()
+    {
+        v::with('lalocespedes\\Cfdimx\\Validation\\Rules\\');
+    }
+
     /**
 	* Sets the data Retenciones
 	* @param array $data
