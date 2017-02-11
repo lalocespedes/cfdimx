@@ -3,6 +3,7 @@
 namespace lalocespedes\Cfdimx;
 
 use DOMDocument;
+use Exception;
 
 use lalocespedes\Cfdimx\Elementos\Cfdi\Comprobante;
 use lalocespedes\Cfdimx\Elementos\Cfdi\Emisor;
@@ -368,6 +369,21 @@ class Cfdi
     {
         $this->cerfile = $cer;
         $this->keypemfile = $key;
+
+        //Get CSD
+        try {
+            
+            $csd = new \lalocespedes\Cfdimx\Csd(dirname($this->cerfile));
+            $this->cerfilecontent = $csd->getCer(basename($this->cerfile));
+            $this->keypemfilecontent = $csd->getKeyPem(basename($this->keypemfile));
+            $this->noCertificado = $csd->getnoCertificado($this->cerfile);
+
+        } catch ( \League\Flysystem\FileNotFoundException $e) {
+
+            throw new Exception($e->getMessage());
+
+        }
+
     }
 
     public function build()
@@ -479,40 +495,6 @@ class Cfdi
 
             $this->errors = [
                 "please set setCertificado"
-            ]; 
-            $this->valid = false;
-            return $this;
-
-        }
-
-        //Get CSD
-        try {
-            
-            if (!file_exists($this->cerfile)) {
-                $this->errors = [
-                    "cer file not found"
-                ]; 
-                $this->valid = false;
-                return $this;
-            }
-
-            if (!file_exists($this->keypemfile)) {
-                $this->errors = [
-                    "key.pem file not found"
-                ]; 
-                $this->valid = false;
-                return $this;
-            }
-
-            $csd = new \lalocespedes\Cfdimx\Csd(dirname($this->cerfile));
-            $this->cerfilecontent = $csd->getCer(basename($this->cerfile));
-            $this->keypemfilecontent = $csd->getKeyPem(basename($this->keypemfile));
-            $this->noCertificado = $csd->getnoCertificado($this->cerfile);
-
-        } catch ( \League\Flysystem\FileNotFoundException $e) {
-
-            $this->errors = [
-                $e->getMessage()
             ]; 
             $this->valid = false;
             return $this;
