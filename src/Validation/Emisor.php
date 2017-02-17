@@ -31,7 +31,7 @@ class Emisor
                }
            }catch (NestedValidationException $e) {
                array_push($this->errors, [
-                   $field => $e->getFullMessage()
+                   $field => "Emisor" . $e->getFullMessage()
                 ]);
            }
         }

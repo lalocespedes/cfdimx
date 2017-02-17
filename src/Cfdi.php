@@ -3,6 +3,7 @@
 namespace lalocespedes\Cfdimx;
 
 use DOMDocument;
+use Exception;
 
 use lalocespedes\Cfdimx\Elementos\Cfdi\Comprobante;
 use lalocespedes\Cfdimx\Elementos\Cfdi\Emisor;
@@ -73,7 +74,7 @@ class Cfdi
         $valid = new \lalocespedes\Cfdimx\Validation\Comprobante;
         $valid->validate($data, [
             'version' => v::notEmpty()->noWhitespace(),
-            'serie' => v::length(1, 25),
+            // 'serie' => v::length(1, 25),
             'folio' => v::length(1, 20),
             'fecha' => v::notEmpty()->date('Y-m-d\TH:i:s')->dateValid(),
             'sello' => v::notEmpty(),
@@ -88,9 +89,9 @@ class Cfdi
             'Moneda' => v::alpha(),
             'total' => v::notEmpty()->floatVal(),
             'tipoDeComprobante' => v::notEmpty()->stringType()->TipoDeComprobanteValid(),
-            'metodoDePago' => v::notEmpty()->alpha(),
+            'metodoDePago' => v::notEmpty()->alnum(),
             'LugarExpedicion' => v::notEmpty(),
-            'NumCtaPago' => v::noWhitespace()->min(4),
+            'NumCtaPago' => v::length(4),
             'FolioFiscalOrig' => v::noWhitespace(),
             'SerieFolioFiscalOrig' => v::noWhitespace(),
             'FechaFolioFiscalOrig' => v::noWhitespace(),
@@ -138,7 +139,7 @@ class Cfdi
         $valid->validate($data, [
             'calle' => v::notEmpty(),
             'noExterior' => v::stringType(),
-            'noInterior' => v::stringType(),
+            // 'noInterior' => v::stringType(),
             'colonia' => v::stringType(),
             'localidad' => v::stringType(),
             'referencia' => v::stringType(),
@@ -211,7 +212,7 @@ class Cfdi
         $valid->validate($data, [
             'calle' => v::notEmpty(),
             'noExterior' => v::stringType(),
-            'noInterior' => v::stringType(),
+            // 'noInterior' => v::stringType(),
             'colonia' => v::stringType(),
             'localidad' => v::stringType(),
             'referencia' => v::stringType(),
@@ -368,6 +369,21 @@ class Cfdi
     {
         $this->cerfile = $cer;
         $this->keypemfile = $key;
+
+        //Get CSD
+        try {
+            
+            $csd = new \lalocespedes\Cfdimx\Csd(dirname($this->cerfile));
+            $this->cerfilecontent = $csd->getCer(basename($this->cerfile));
+            $this->keypemfilecontent = $csd->getKeyPem(basename($this->keypemfile));
+            $this->noCertificado = $csd->getnoCertificado($this->cerfile);
+
+        } catch ( \League\Flysystem\FileNotFoundException $e) {
+
+            throw new Exception($e->getMessage());
+
+        }
+
     }
 
     public function build()
@@ -479,40 +495,6 @@ class Cfdi
 
             $this->errors = [
                 "please set setCertificado"
-            ]; 
-            $this->valid = false;
-            return $this;
-
-        }
-
-        //Get CSD
-        try {
-            
-            if (!file_exists($this->cerfile)) {
-                $this->errors = [
-                    "cer file not found"
-                ]; 
-                $this->valid = false;
-                return $this;
-            }
-
-            if (!file_exists($this->keypemfile)) {
-                $this->errors = [
-                    "key.pem file not found"
-                ]; 
-                $this->valid = false;
-                return $this;
-            }
-
-            $csd = new \lalocespedes\Cfdimx\Csd(dirname($this->cerfile));
-            $this->cerfilecontent = $csd->getCer(basename($this->cerfile));
-            $this->keypemfilecontent = $csd->getKeyPem(basename($this->keypemfile));
-            $this->noCertificado = $csd->getnoCertificado($this->cerfile);
-
-        } catch ( \League\Flysystem\FileNotFoundException $e) {
-
-            $this->errors = [
-                $e->getMessage()
             ]; 
             $this->valid = false;
             return $this;

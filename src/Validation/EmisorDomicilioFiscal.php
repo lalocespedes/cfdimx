@@ -31,7 +31,7 @@ class EmisorDomicilioFiscal
                }
            }catch (NestedValidationException $e) {
                array_push($this->errors, [
-                   $field => $e->getFullMessage()
+                   $field => "Emisor Domicilio" . $e->getFullMessage()
                 ]);
            }
         }

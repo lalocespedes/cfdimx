@@ -31,7 +31,11 @@ class ReceptorDomicilio
                }
            }catch (NestedValidationException $e) {
                array_push($this->errors, [
-                   $field => $e->getFullMessage()
+                   $field => [
+                       "position" => array_search($field, array_keys($array)),
+                       "value" => $array[$field],
+                       "message" => "Receptor Domicilio" . $e->getFullMessage()
+                   ]
                 ]);
            }
         }
