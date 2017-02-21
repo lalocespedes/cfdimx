@@ -10,7 +10,7 @@ class Totales
     protected $totales;
     protected $impretenidos;
 
-    function __construct($xml, $retenciones, array $data, array $impretenidos)
+    function __construct($xml, $retenciones, array $data, array $impretenidos=null)
     {
         $this->totales = $xml->createElement("retenciones:Totales");
 
@@ -18,20 +18,23 @@ class Totales
 
         $this->setAttribute($data, "totales");
 
-        // add nodo impretenidos
+        // add nodos impretenidos
 
-        if(!empty($impretenidos)) {
-            $this->impretenidos = $xml->createElement("retenciones:ImpRetenidos");
-            $this->totales->appendChild($this->impretenidos);
+        if(count($impretenidos)) {
+            
+            foreach ($impretenidos as $key => $value) {
+
+                $this->impretenidos = $xml->createElement("retenciones:ImpRetenidos");
+                $this->totales->appendChild($this->impretenidos);
+            
+                $this->setAttribute([
+                    "TipoPagoRet" => $value['TipoPagoRet'],
+                    "montoRet" => $value['montoRet'],
+                    "Impuesto" => $value['Impuesto'],
+                    "BaseRet" => $value['BaseRet']
+                ], 'impretenidos');
+            }
         }
-
-        $this->setAttribute([
-            "TipoPagoRet" => $impretenidos['TipoPagoRet'],
-            "montoRet" => $impretenidos['montoRet'],
-            "Impuesto" => $impretenidos['Impuesto'],
-            "BaseRet" => $impretenidos['BaseRet']
-        ], 'impretenidos');
-
     }
 
     public function appendChild($value)

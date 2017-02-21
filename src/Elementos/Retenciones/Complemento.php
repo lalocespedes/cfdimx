@@ -12,24 +12,26 @@ class Complemento
 
     function __construct($xml, $retenciones, $data)
     {
+        // Create Element retenciones:Complemento
         $complemento = $xml->createElement("retenciones:Complemento");
-
-        $dividendos = $xml->createElement("dividendos:Dividendos");
-
         $retenciones->appendChild($complemento);
 
-        // Add nodo dividendos
-        
-        $complemento->appendChild($dividendos);
+        if(array_key_exists("Dividendos", $data)) {
 
-        // $this->setAttribute($data['Dividendos'], "dividendos");
+            // Create Element dividendos:Dividendos
+            $dividendos = $xml->createElement("dividendos:Dividendos");
+            $this->dividendos = $complemento->appendChild($dividendos);
 
-        // Add nodo DividOUtil
+            // Set Attibutes
+            $this->setAttribute($data['Dividendos'], "dividendos");
 
-        // $this->DividOUtil = $xml->createElement("dividendos:DividOUtil");
-        // $this->complemento->appendChild($this->DividOUtil);
+            // Create Element dividendos:DividOUtil
+            $dividOUtil = $xml->createElement("dividendos:DividOUtil");
+            $this->DividOUtil = $dividendos->appendChild($dividOUtil);
 
-        // $this->setAttribute($data['DividOUtil'], "DividOUtil");
+            $this->setAttribute($data['DividOUtil'], "DividOUtil");
+        }
+
     }
 
     public function appendChild($value)
@@ -37,8 +39,9 @@ class Complemento
         $this->complemento->appendChild($value);
     }
     
-    private function setAttribute($data, $nodo)
+    private function setAttribute(array $data, $nodo)
     {
+
         foreach ($data as $key => $val) {
 		    $val = preg_replace('/\s\s+/', ' ', $val); // Regla 5a y 5c
 		    $val = trim($val); // Regla 5b
