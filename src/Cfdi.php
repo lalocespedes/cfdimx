@@ -307,7 +307,7 @@ class Cfdi
         foreach ($data as $key => $value) {
 
             $valid->validate($value, [
-                'impuesto' => v::numeric(),
+                'impuesto' => v::notEmpty(),
                 'importe' => v::numeric()->floatVal()
             ]);
         }
@@ -344,7 +344,7 @@ class Cfdi
         foreach ($data as $key => $value) {
 
             $valid->validate($value, [
-                'impuesto' => v::numeric(),
+                'impuesto' => v::notEmpty(),
                 'tasa' => v::numeric()->floatVal(),
                 'importe' => v::numeric()->floatVal()
             ]);
