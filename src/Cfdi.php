@@ -82,12 +82,12 @@ class Cfdi
             'noCertificado' => v::notEmpty()->length(1, 20),
             'certificado' => v::notEmpty()->length(1, 20),
             'condicionesDePago' => v::length(1, 100),
-            'subTotal' => v::notEmpty()->floatVal(),
+            'subTotal' => v::numeric()->floatVal(),
             'descuento' => v::floatVal(),
             'motivoDescuento' => v::alpha(),
             'TipoCambio' => v::floatVal(),
             'Moneda' => v::alpha(),
-            'total' => v::notEmpty()->floatVal(),
+            'total' => v::numeric()->floatVal(),
             'tipoDeComprobante' => v::notEmpty()->stringType()->TipoDeComprobanteValid(),
             'metodoDePago' => v::notEmpty()->alnum(),
             'LugarExpedicion' => v::notEmpty(),
@@ -247,8 +247,8 @@ class Cfdi
                 'unidad' => v::notEmpty(),
                 'noIdentificacion' => v::stringType(),
                 'descripcion' => v::notEmpty(),
-                'valorUnitario' => v::notEmpty(),
-                'importe' => v::notEmpty()
+                'valorUnitario' => v::numeric(),
+                'importe' => v::numeric()
             ]);
         }
 
@@ -307,8 +307,8 @@ class Cfdi
         foreach ($data as $key => $value) {
 
             $valid->validate($value, [
-                'impuesto' => v::notEmpty(),
-                'importe' => v::notEmpty()->floatVal()
+                'impuesto' => v::numeric(),
+                'importe' => v::numeric()->floatVal()
             ]);
         }
 
@@ -344,9 +344,9 @@ class Cfdi
         foreach ($data as $key => $value) {
 
             $valid->validate($value, [
-                'impuesto' => v::notEmpty(),
-                'tasa' => v::notEmpty()->floatVal(),
-                'importe' => v::notEmpty()->floatVal()
+                'impuesto' => v::numeric(),
+                'tasa' => v::numeric()->floatVal(),
+                'importe' => v::numeric()->floatVal()
             ]);
         }
 
