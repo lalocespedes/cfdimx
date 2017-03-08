@@ -276,9 +276,9 @@ class Cfdi
         ]);
 
         if($valid->failed()) {
-
-            $this->valid = false;
-            return $this->errors = $valid->errors();
+            foreach ($valid->errors() as $key => $error) {
+                throw new Exception(implode(",", $error), 1);
+            }
         }
         
         $this->dataimpuestos = $data;
@@ -294,12 +294,7 @@ class Cfdi
 
         if(is_null($this->dataimpuestos)) {
 
-            $this->errors = [
-                "please setImpuestosRetenciones node"
-            ]; 
-            $this->valid = false;
-            return $this;
-
+            throw new Exception('data setImpuestos empty', 1);
         }
 
         $valid = new \lalocespedes\Cfdimx\Validation\ImpuestosRetenciones;
@@ -308,14 +303,14 @@ class Cfdi
 
             $valid->validate($value, [
                 'impuesto' => v::notEmpty(),
-                'importe' => v::numeric()->floatVal()
+                'importe' => v::floatVal()
             ]);
         }
 
         if($valid->failed()) {
-
-            $this->valid = false;
-            return $this->errors = $valid->errors();
+            foreach ($valid->errors() as $key => $error) {
+                throw new Exception(implode(",", $error), 1);
+            }
         }
         
         $this->dataimpuestosretenciones = $data;
@@ -331,12 +326,7 @@ class Cfdi
         
         if(is_null($this->dataimpuestos)) {
 
-            $this->errors = [
-                "please setImpuestosTrasladados node"
-            ]; 
-            $this->valid = false;
-            return $this;
-
+            throw new Exception('data setImpuestos empty', 1);
         }
 
         $valid = new \lalocespedes\Cfdimx\Validation\ImpuestosTrasladados;
@@ -345,15 +335,15 @@ class Cfdi
 
             $valid->validate($value, [
                 'impuesto' => v::notEmpty(),
-                'tasa' => v::numeric()->floatVal(),
-                'importe' => v::numeric()->floatVal()
+                'tasa' => v::floatVal(),
+                'importe' => v::floatVal()
             ]);
         }
 
         if($valid->failed()) {
-
-            $this->valid = false;
-            return $this->errors = $valid->errors();
+            foreach ($valid->errors() as $key => $error) {
+                throw new Exception(implode(",", $error), 1);
+            }
         }
         
         $this->dataimpuestostrasladados = $data;
@@ -392,24 +382,14 @@ class Cfdi
 
         if(is_null($this->datacomprobante)) {
 
-            $this->errors = [
-                "please setComprobante node"
-            ]; 
-            $this->valid = false;
-            return $this;
-
+            throw new Exception('data setComprobante empty', 1);
         }
 
         $this->comprobante = new Comprobante($this->xml, $this->datacomprobante);
 
         if(is_null($this->dataemisor)) {
 
-            $this->errors = [
-                "please setEmisor node"
-            ]; 
-            $this->valid = false;
-            return $this;
-
+            throw new Exception('data setEmisor empty', 1);
         }
 
         $this->emisor = new Emisor($this->xml, $this->comprobante, $this->dataemisor);
@@ -420,24 +400,14 @@ class Cfdi
 
         if(is_null($this->dataregimenfiscal)) {
 
-            $this->errors = [
-                "please setRegimenFiscal node"
-            ]; 
-            $this->valid = false;
-            return $this;
-
+            throw new Exception('data setRegimenFiscal empty', 1);
         }
 
         $this->regimenfiscal = new RegimenFiscal($this->xml, $this->emisor, $this->dataregimenfiscal);
 
         if(is_null($this->datareceptor)) {
 
-            $this->errors = [
-                "please setReceptor node"
-            ]; 
-            $this->valid = false;
-            return $this;
-
+            throw new Exception('data setReceptor empty', 1);
         }
 
         $this->receptor = new Receptor($this->xml, $this->comprobante, $this->datareceptor);
@@ -448,12 +418,7 @@ class Cfdi
 
         if(is_null($this->dataconceptos)) {
 
-            $this->errors = [
-                "please setConceptos node"
-            ]; 
-            $this->valid = false;
-            return $this;
-
+            throw new Exception('data setConceptos empty', 1);
         }
 
         $this->conceptos = new Conceptos($this->xml, $this->comprobante, $this->dataconceptos);
@@ -464,22 +429,14 @@ class Cfdi
 
             if(is_null($this->dataimpuestosretenciones)) {
 
-                $this->errors = [
-                    "please setImpuestosRetenciones node"
-                ]; 
-                $this->valid = false;
-                return $this;
+                throw new Exception('data setImpuestosRetenciones empty', 1);
             }
 
             $this->impuestosretenciones = new ImpuestosRetenciones($this->xml, $this->impuestos, $this->dataimpuestosretenciones);
 
             if(is_null($this->dataimpuestostrasladados)) {
 
-                $this->errors = [
-                    "please setImpuestosTrasladados node"
-                ]; 
-                $this->valid = false;
-                return $this;
+                throw new Exception('data setImpuestosTrasladados empty', 1);
             }
 
             $this->impuestostraslados = new ImpuestosTraslados($this->xml, $this->impuestos, $this->dataimpuestostrasladados);
@@ -493,11 +450,7 @@ class Cfdi
         // sellar xml
         if(is_null($this->cerfile) || is_null($this->keypemfile)) {
 
-            $this->errors = [
-                "please set setCertificado"
-            ]; 
-            $this->valid = false;
-            return $this;
+            throw new Exception('please set setCertificado', 1);
 
         }
 
