@@ -295,7 +295,7 @@ class Cfdi
         if(is_null($this->dataimpuestos)) {
 
             $this->errors = [
-                "please setImpuestos node"
+                "please setImpuestosRetenciones node"
             ]; 
             $this->valid = false;
             return $this;
@@ -332,7 +332,7 @@ class Cfdi
         if(is_null($this->dataimpuestos)) {
 
             $this->errors = [
-                "please setImpuestos node"
+                "please setImpuestosTrasladados node"
             ]; 
             $this->valid = false;
             return $this;
