@@ -27,7 +27,8 @@ class Receptor
         $this->setAttribute([
             "CURPR" => (in_array('CURPR', $data)) ? $data['CURPR'] : '',
             "NomDenRazSocR" => $data['NomDenRazSocR'],
-            "RFCRecep" => $data['RFCRecep']
+            "RFCRecep" => $data['RFCRecep'],
+            "CURPR" => $data['CURPR'],
         ], $data['Nacionalidad']);
 
     }
