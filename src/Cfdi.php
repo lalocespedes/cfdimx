@@ -45,6 +45,7 @@ class Cfdi
     protected $dataimpuestos;
     protected $dataimpuestosretenciones;
     protected $dataimpuestostrasladados;
+    protected $datacomplemento;
     protected $xml;
     protected $comprobante;
     protected $emisor;
@@ -351,6 +352,15 @@ class Cfdi
     }
 
     /**
+	* Sets the data Complemento
+	* @param array $data
+	*/
+    public function setComplemento(array $data)
+    {
+        $this->datacomplemento = $data;
+    }
+
+    /**
 	* Sets the files Certificado
 	* @param file $cer
     * @param file $key
@@ -443,9 +453,10 @@ class Cfdi
 
         }
         
-        $this->complemento = new Complemento($this->xml, $this->comprobante);
+        if($this->datacomplemento) {
 
-        $this->xml->formatOutput = true;
+            $this->complemento = new Complemento($this->xml, $this->comprobante, $this->datacomplemento);
+        }
 
         // sellar xml
         if(is_null($this->cerfile) || is_null($this->keypemfile)) {
