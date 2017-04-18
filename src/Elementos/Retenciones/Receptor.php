@@ -29,6 +29,7 @@ class Receptor
             "NomDenRazSocR" => $data['NomDenRazSocR'],
             "RFCRecep" => $data['RFCRecep'],
             "CURPR" => $data['CURPR'],
+            "NumRegIdTrib" => $data['NumRegIdTrib']
         ], $data['Nacionalidad']);
 
     }

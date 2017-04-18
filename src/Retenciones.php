@@ -10,6 +10,7 @@ use lalocespedes\Cfdimx\Elementos\Retenciones\Receptor;
 use lalocespedes\Cfdimx\Elementos\Retenciones\Periodo;
 use lalocespedes\Cfdimx\Elementos\Retenciones\Totales;
 use lalocespedes\Cfdimx\Elementos\Retenciones\Complemento;
+use lalocespedes\Cfdimx\Elementos\Retenciones\Complementos\PagosExtranjeros;
 
 use Respect\Validation\Validator as v;
 /**
@@ -35,6 +36,7 @@ class Retenciones
     protected $periodo;
     protected $totales;
     protected $complemento;
+    protected $complementopagosextranjeros;
 
     // Data
     protected $dataretenciones;
@@ -43,7 +45,8 @@ class Retenciones
     protected $dataperiodo;
     protected $datatotales;
     protected $dataimpretenidos;
-    protected $datacomplemento;
+    protected $datacomplemento = [];
+    protected $datacomplementopagosextranjeros = [];
 
     public function __construct()
     {
@@ -155,6 +158,15 @@ class Retenciones
     }
 
     /**
+	* Sets the data Dividendos
+	* @param array $data
+	*/
+    public function setComplementoPagosExtranjeros(array $data)
+    {
+        $this->datacomplementopagosextranjeros = $data;
+    }
+
+    /**
 	* Sets the files Certificado
 	* @param file $cer
     * @param file $key
@@ -172,12 +184,12 @@ class Retenciones
         if(is_null($this->dataretenciones)) {
             $this->errors = [
                 "please setRetenciones node"
-            ]; 
+            ];
             $this->valid = false;
             return $this;
         }
 
-        $this->retenciones = new Retenc($this->xml, $this->dataretenciones);
+        $this->retenciones = new Retenc($this->xml, $this->dataretenciones, $this->datacomplemento, $this->datacomplementopagosextranjeros);
 
         $this->emisor = new Emisor($this->xml, $this->retenciones, $this->dataemisor);
 
@@ -187,13 +199,21 @@ class Retenciones
 
         $this->totales = new Totales($this->xml, $this->retenciones, $this->datatotales, $this->dataimpretenidos);
 
-        if(!is_null($this->datacomplemento)) {
+        if(count($this->datacomplemento)) {
+
             $this->complemento = new Complemento($this->xml, $this->retenciones, $this->datacomplemento);
+        }
+
+        if(count($this->datacomplementopagosextranjeros)) {
+
+            $this->complementopagosextranjeros = new PagosExtranjeros($this->xml, $this->retenciones, $this->datacomplementopagosextranjeros);
         }
 
         //////////////////////////////////////////////////////
 
         $this->xml->formatOutput = true;
+
+        // dd($this->xml->saveXML());
 
         // sellar xml
         if(is_null($this->cerfile) || is_null($this->keypemfile)) {

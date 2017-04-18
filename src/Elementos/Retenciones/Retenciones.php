@@ -9,8 +9,11 @@ class Retenciones
 {
     protected $retenciones;
 
-    function __construct($xml, array $data)
-    {        
+    function __construct($xml, array $data, array $complemento, array $complementopagosextranjeros)
+    {
+
+        // dd($complemento);
+        
         $this->retenciones = $xml->appendChild(
             $xml->createElementNS("http://www.sat.gob.mx/esquemas/retencionpago/1","retenciones:Retenciones")
         );
@@ -18,14 +21,38 @@ class Retenciones
         $this->retenciones->setAttributeNS(
             'http://www.w3.org/2001/XMLSchema-instance',
             'xsi:schemaLocation',
-            'http://www.sat.gob.mx/esquemas/retencionpago/1 http://www.sat.gob.mx/esquemas/retencionpago/1/retencionpagov1.xsd http://www.sat.gob.mx/esquemas/retencionpago/1/dividendos http://www.sat.gob.mx/esquemas/retencionpago/1/dividendos/dividendos.xsd'
+            'http://www.sat.gob.mx/esquemas/retencionpago/1 http://www.sat.gob.mx/esquemas/retencionpago/1/retencionpagov1.xsd'
         );
 
-        $this->retenciones->setAttributeNS(
-            'http://www.w3.org/2000/xmlns/',
-            'xmlns:dividendos',
-            'http://www.sat.gob.mx/esquemas/retencionpago/1/dividendos'
-        );
+        if (array_key_exists("Dividendos", $complemento)) {
+
+            $this->retenciones->setAttributeNS(
+                'http://www.w3.org/2001/XMLSchema-instance',
+                'xsi:schemaLocation',
+                'http://www.sat.gob.mx/esquemas/retencionpago/1 http://www.sat.gob.mx/esquemas/retencionpago/1/retencionpagov1.xsd http://www.sat.gob.mx/esquemas/retencionpago/1/dividendos http://www.sat.gob.mx/esquemas/retencionpago/1/dividendos/dividendos.xsd'
+            );
+
+            $this->retenciones->setAttributeNS(
+                'http://www.w3.org/2000/xmlns/',
+                'xmlns:dividendos',
+                'http://www.sat.gob.mx/esquemas/retencionpago/1/dividendos'
+            );
+        }
+
+        if (array_key_exists("Pagosaextranjeros", $complementopagosextranjeros)) {
+
+            $this->retenciones->setAttributeNS(
+                'http://www.w3.org/2001/XMLSchema-instance',
+                'xsi:schemaLocation',
+                'http://www.sat.gob.mx/esquemas/retencionpago/1 http://www.sat.gob.mx/esquemas/retencionpago/1/retencionpagov1.xsd http://www.sat.gob.mx/esquemas/retencionpago/1/pagosaextranjeros http://www.sat.gob.mx/esquemas/retencionpago/1/pagosaextranjeros/pagosaextranjeros.xsd'
+            );
+
+            $this->retenciones->setAttributeNS(
+                'http://www.w3.org/2000/xmlns/',
+                'xmlns:pagosaextranjeros',
+                'http://www.sat.gob.mx/esquemas/retencionpago/1/pagosaextranjeros'
+            );
+        }
 
         foreach ($data as $key => $val) {
 		    $val = preg_replace('/\s\s+/', ' ', $val); // Regla 5a y 5c
