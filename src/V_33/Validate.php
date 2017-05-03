@@ -10,37 +10,44 @@ use Exception;
  */
 class Validate
 {
-    function __construct()
+    /**
+    * @var array
+    */
+    protected $errors = [];
+
+    protected $xml;
+
+    public function schemaXSD($xml)
     {
-        dump($this);
-        exit;
+        $this->xml = $xml;
+
+        $xml = new DomDocument;
+        $xml->loadXML(utf8_decode($this->xml)) or die("XML invalido");
 
         libxml_use_internal_errors(true);
-
-        $xml->schemaValidate('/home/user/dev/timbrado/vendor/lalocespedes/cfdimx/src/utils/xsd33/cfdv33.xsd');
+       
+        $xml->schemaValidate( __DIR__ . '/../utils/xsd/cfdv33.xsd' );
 
         $errors = libxml_get_errors();
-
-        $error = [];
 
         foreach ($errors as $key => $error_xml) {
 
             if($error_xml->level === LIBXML_ERR_WARNING) {
-                array_push($error, [
+                array_push($this->errors, [
                     "message" =>$error_xml->message,
                     "level" => $error_xml->level
                 ]);
             }
 
             if($error_xml->level === LIBXML_ERR_ERROR) {
-                array_push($error, [
+                array_push($this->errors, [
                     "message" =>$error_xml->message,
                     "level" => $error_xml->level
                 ]);
             }
 
             if($error_xml->level === LIBXML_ERR_FATAL) {
-                array_push($error, [
+                array_push($this->errors, [
                     "message" =>$error_xml->message,
                     "level" => $error_xml->level
                 ]);
@@ -58,5 +65,16 @@ class Validate
         }
 
         return $this;
+
+    }
+
+    public function failed()
+    {
+        return !empty($this->errors);
+    }
+    
+    public function errors()
+    {
+        return $this->errors;
     }
 }
