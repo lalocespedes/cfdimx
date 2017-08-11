@@ -20,6 +20,7 @@ class Validate
     public function schemaXSD($xml)
     {
         $this->xml = $xml;
+        $error = null;
 
         $xml = new DomDocument;
         $xml->loadXML(utf8_decode($this->xml)) or die("XML invalido");

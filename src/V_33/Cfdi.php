@@ -37,6 +37,8 @@ class Cfdi
     protected $cerfile;
     protected $certificado;
     protected $noCertificado;
+    protected $cerfilecontent;
+    protected $keypemfilecontent;
 
     function __construct()
     {
@@ -211,10 +213,13 @@ class Cfdi
         $private = openssl_get_privatekey(file_get_contents($this->keypemfile));
         openssl_sign($this->getCadenaOriginal(), $sig, $private, OPENSSL_ALGO_SHA256);
         openssl_free_key($private);
+        
+        $sello64 = base64_encode($sig);
+        $cer64 = str_replace(array('\n', '\r'), '', base64_encode($this->cerfilecontent));
 
-        $sello = base64_encode($sig);
-
-        $this->comprobante->setAttribute('Sello', $sello);
+        $this->comprobante->setAttribute('Sello', $sello64);
+        $this->comprobante->setAttribute('Certificado', $cer64);
+        $this->comprobante->setAttribute('NoCertificado', $this->noCertificado);
     }
 
 }
