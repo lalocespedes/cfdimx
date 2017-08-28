@@ -28,6 +28,11 @@ class Cfdi
     protected $receptor;
     protected $conceptos;
     protected $concepto;
+    protected $conceptoimpuestos;
+    protected $conceptoimpuestosTraslados;
+    protected $conceptoimpuestosTraslado;
+    protected $conceptoimpuestosretenciones;
+    protected $conceptoimpuestosRetencion;
     protected $impuestos;
     protected $impuestostraslados;
     protected $traslado;
@@ -84,7 +89,6 @@ class Cfdi
 
     public function setConceptos(array $data)
     {
-        // valid data
 
         $this->conceptos = $this->xml->createElement("cfdi:Conceptos");
         $this->comprobante->appendChild($this->conceptos);
@@ -94,7 +98,42 @@ class Cfdi
             $this->concepto = $this->xml->createElement("cfdi:Concepto");
             $this->conceptos->appendChild($this->concepto);
 
-            $this->setAttribute($item, 'concepto');
+            // Atributos
+            $this->setAttribute($item['Attributes'], 'concepto');
+
+            // Impuestos
+            if(count($item['Impuestos'])) {
+
+                $this->conceptoimpuestos = $this->xml->createElement("cfdi:Impuestos");
+                $this->concepto->appendChild($this->conceptoimpuestos);
+            }
+
+            // Impuestos Traslados
+            if(count($item['Impuestos']['Traslados'])) {
+                
+                $this->conceptoimpuestosTraslados = $this->xml->createElement("cfdi:Traslados");
+                $this->conceptoimpuestos->appendChild($this->conceptoimpuestosTraslados);
+
+                foreach($item['Impuestos']['Traslados'] as $key_imp => $tax) {
+                    $this->conceptoimpuestosTraslado = $this->xml->createElement("cfdi:Traslado");
+                    $this->conceptoimpuestosTraslados->appendChild($this->conceptoimpuestosTraslado);
+                    $this->setAttribute($tax, 'conceptoimpuestosTraslado');
+                }
+            }
+
+            // // Impuestos Retencion
+
+            if(count($item['Impuestos']['Retenciones'])) {
+
+                $this->conceptoimpuestosretenciones = $this->xml->createElement("cfdi:Retenciones");
+                $this->conceptoimpuestos->appendChild($this->conceptoimpuestosretenciones);
+
+                foreach($item['Impuestos']['Retenciones'] as $key_imp => $tax) {
+                    $this->conceptoimpuestosRetencion = $this->xml->createElement("cfdi:Retencion");
+                    $this->conceptoimpuestosretenciones->appendChild($this->conceptoimpuestosRetencion);
+                    $this->setAttribute($tax, 'conceptoimpuestosRetencion');
+                }
+            }
 
         }
     }
@@ -210,16 +249,17 @@ class Cfdi
     
     private function Sellar()
     {
+        $cer64 = str_replace(array('\n', '\r'), '', base64_encode($this->cerfilecontent));
+        $this->comprobante->setAttribute('Certificado', $cer64);
+        $this->comprobante->setAttribute('NoCertificado', $this->noCertificado);
+
         $private = openssl_get_privatekey(file_get_contents($this->keypemfile));
         openssl_sign($this->getCadenaOriginal(), $sig, $private, OPENSSL_ALGO_SHA256);
         openssl_free_key($private);
-        
+
         $sello64 = base64_encode($sig);
-        $cer64 = str_replace(array('\n', '\r'), '', base64_encode($this->cerfilecontent));
 
         $this->comprobante->setAttribute('Sello', $sello64);
-        $this->comprobante->setAttribute('Certificado', $cer64);
-        $this->comprobante->setAttribute('NoCertificado', $this->noCertificado);
     }
 
 }
