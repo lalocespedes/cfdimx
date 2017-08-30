@@ -101,37 +101,39 @@ class Cfdi
             // Atributos
             $this->setAttribute($item['Attributes'], 'concepto');
 
-            // Impuestos
-            if(count($item['Impuestos'])) {
+            if(count($item['Impuestos']['Traslados']) && count($item['Impuestos']['Retenciones'])) {
 
-                $this->conceptoimpuestos = $this->xml->createElement("cfdi:Impuestos");
-                $this->concepto->appendChild($this->conceptoimpuestos);
-            }
-            
-            // Impuestos Traslados
-            if(count($item['Impuestos']['Traslados'])) {
-                
-                $this->conceptoimpuestosTraslados = $this->xml->createElement("cfdi:Traslados");
-                $this->conceptoimpuestos->appendChild($this->conceptoimpuestosTraslados);
+                // Impuestos
+                if(count($item['Impuestos'])) {
 
-                foreach($item['Impuestos']['Traslados'] as $key_imp => $tax) {
-                    $this->conceptoimpuestosTraslado = $this->xml->createElement("cfdi:Traslado");
-                    $this->conceptoimpuestosTraslados->appendChild($this->conceptoimpuestosTraslado);
-                    $this->setAttribute($tax, 'conceptoimpuestosTraslado');
+                    $this->conceptoimpuestos = $this->xml->createElement("cfdi:Impuestos");
+                    $this->concepto->appendChild($this->conceptoimpuestos);
                 }
-            }
-
-            // // Impuestos Retencion
-
-            if(count($item['Impuestos']['Retenciones'])) {
                 
-                $this->conceptoimpuestosretenciones = $this->xml->createElement("cfdi:Retenciones");
-                $this->conceptoimpuestos->appendChild($this->conceptoimpuestosretenciones);
+                // Impuestos Traslados
+                if(count($item['Impuestos']['Traslados'])) {
+                    
+                    $this->conceptoimpuestosTraslados = $this->xml->createElement("cfdi:Traslados");
+                    $this->conceptoimpuestos->appendChild($this->conceptoimpuestosTraslados);
 
-                foreach($item['Impuestos']['Retenciones'] as $key_imp => $tax) {
-                    $this->conceptoimpuestosRetencion = $this->xml->createElement("cfdi:Retencion");
-                    $this->conceptoimpuestosretenciones->appendChild($this->conceptoimpuestosRetencion);
-                    $this->setAttribute($tax, 'conceptoimpuestosRetencion');
+                    foreach($item['Impuestos']['Traslados'] as $key_imp => $tax) {
+                        $this->conceptoimpuestosTraslado = $this->xml->createElement("cfdi:Traslado");
+                        $this->conceptoimpuestosTraslados->appendChild($this->conceptoimpuestosTraslado);
+                        $this->setAttribute($tax, 'conceptoimpuestosTraslado');
+                    }
+                }
+
+                // Impuestos Retencion
+                if(count($item['Impuestos']['Retenciones'])) {
+                    
+                    $this->conceptoimpuestosretenciones = $this->xml->createElement("cfdi:Retenciones");
+                    $this->conceptoimpuestos->appendChild($this->conceptoimpuestosretenciones);
+
+                    foreach($item['Impuestos']['Retenciones'] as $key_imp => $tax) {
+                        $this->conceptoimpuestosRetencion = $this->xml->createElement("cfdi:Retencion");
+                        $this->conceptoimpuestosretenciones->appendChild($this->conceptoimpuestosRetencion);
+                        $this->setAttribute($tax, 'conceptoimpuestosRetencion');
+                    }
                 }
             }
 
