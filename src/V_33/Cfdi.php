@@ -28,6 +28,8 @@ class Cfdi
     protected $receptor;
     protected $conceptos;
     protected $concepto;
+    protected $CfdiRelacionados;
+    protected $CfdiRelacionado;
     protected $conceptoimpuestos;
     protected $conceptoimpuestosTraslados;
     protected $conceptoimpuestosTraslado;
@@ -64,6 +66,32 @@ class Cfdi
         $this->comprobante->setAttribute('Certificado', str_replace(array('\n', '\r'), '', base64_encode($this->cerfilecontent)));
         $this->comprobante->setAttribute('Sello', "");
         $this->comprobante->setAttribute('NoCertificado', $this->noCertificado);
+
+    }
+
+    public function setCfdiRelacionados(array $data)
+    {
+        if(!count($data)) {
+            return false;
+        }
+
+        $this->CfdiRelacionados = $this->xml->createElement("cfdi:CfdiRelacionados");
+        $this->comprobante->appendChild($this->CfdiRelacionados);
+
+        $this->setAttribute([
+            'TipoRelacion' => $data['TipoRelacion']
+        ], 'CfdiRelacionados');
+
+        foreach ($data['UUIDS'] as $key => $item) {
+
+            $this->CfdiRelacionado = $this->xml->createElement("cfdi:CfdiRelacionado");
+            $this->CfdiRelacionados->appendChild($this->CfdiRelacionado);
+
+            $this->setAttribute([
+                'UUID' => $item['UUID']
+            ], 'CfdiRelacionado');
+
+        }
 
     }
 
@@ -111,6 +139,9 @@ class Cfdi
                 
                 // Impuestos Traslados
                 if(count($item['Impuestos']['Traslados'])) {
+
+                    // dump($item);
+                    // exit;
                     
                     $this->conceptoimpuestosTraslados = $this->xml->createElement("cfdi:Traslados");
                     $this->conceptoimpuestos->appendChild($this->conceptoimpuestosTraslados);
@@ -173,6 +204,9 @@ class Cfdi
     public function setImpuestosTraslados(array $data)
     {
         // valid data
+
+        // dump($data);
+        // exit;
 
         if(!count($data)) {
             return false;
