@@ -89,7 +89,6 @@ class Cfdi
 
     public function setConceptos(array $data)
     {
-
         $this->conceptos = $this->xml->createElement("cfdi:Conceptos");
         $this->comprobante->appendChild($this->conceptos);
 
@@ -101,7 +100,7 @@ class Cfdi
             // Atributos
             $this->setAttribute($item['Attributes'], 'concepto');
 
-            if(count($item['Impuestos']['Traslados']) && count($item['Impuestos']['Retenciones'])) {
+            if(count($item['Impuestos']['Traslados']) || count($item['Impuestos']['Retenciones'])) {
 
                 // Impuestos
                 if(count($item['Impuestos'])) {
@@ -155,6 +154,10 @@ class Cfdi
     {
         // valid data
 
+        if(!count($data)) {
+            return false;
+        }
+
         $this->impuestosretenciones = $this->xml->createElement("cfdi:Retenciones");
         $this->impuestos->appendChild($this->impuestosretenciones);
 
@@ -165,12 +168,15 @@ class Cfdi
 
             $this->setAttribute($value, 'retencion');
         }
-
     }
 
     public function setImpuestosTraslados(array $data)
     {
         // valid data
+
+        if(!count($data)) {
+            return false;
+        }
 
         $this->impuestostraslados = $this->xml->createElement("cfdi:Traslados");
         $this->impuestos->appendChild($this->impuestostraslados);
@@ -182,7 +188,6 @@ class Cfdi
 
             $this->setAttribute($value, 'traslado');
         }
-
     }
     
     public function setCer($cer, $key)
