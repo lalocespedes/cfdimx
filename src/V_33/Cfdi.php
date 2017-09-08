@@ -138,7 +138,11 @@ class Cfdi
                 }
                 
                 // Impuestos Traslados
+
                 if(array_key_exists('Traslados', $item['Impuestos'])) {
+
+                    // dump($item);
+                    // exit;
                     
                     $this->conceptoimpuestosTraslados = $this->xml->createElement("cfdi:Traslados");
                     $this->conceptoimpuestos->appendChild($this->conceptoimpuestosTraslados);
@@ -200,6 +204,11 @@ class Cfdi
 
     public function setImpuestosTraslados(array $data)
     {
+        // valid data
+
+        // dump($data);
+        // exit;
+
         if(!count($data)) {
             return false;
         }
@@ -268,7 +277,7 @@ class Cfdi
 
     }
 
-    private function getCadenaOriginal()
+    public function getCadenaOriginal()
     {
         $xsl = new DOMDocument("1.0","UTF-8");
         $xsl->load(__DIR__ . '/../utils/xslt/cadenaoriginal_3_3.xslt');
@@ -277,7 +286,9 @@ class Cfdi
         $new = new \DOMDocument("1.0","UTF-8");
         $new->loadXML($this->xml->saveXml());
         
-        return $proc->transformToXML($new);
+        $cadena_original = $proc->transformToXML($new);
+
+        return $cadena_original;
     }
     
     private function Sellar()
