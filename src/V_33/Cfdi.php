@@ -139,10 +139,7 @@ class Cfdi
                 
                 // Impuestos Traslados
 
-                if(array_key_exists('Traslados', $item['Impuestos'])) {
-
-                    // dump($item);
-                    // exit;
+                if(array_key_exists('Traslados', $item['Impuestos']) && count($item['Impuestos']['Traslados'])) {
                     
                     $this->conceptoimpuestosTraslados = $this->xml->createElement("cfdi:Traslados");
                     $this->conceptoimpuestos->appendChild($this->conceptoimpuestosTraslados);
@@ -156,7 +153,7 @@ class Cfdi
 
                 // Impuestos Retencion
 
-                if(array_key_exists('Retenciones', $item['Impuestos'])) {
+                if(array_key_exists('Retenciones', $item['Impuestos']) && count($item['Impuestos']['Retenciones'])) {                    
                     
                     $this->conceptoimpuestosretenciones = $this->xml->createElement("cfdi:Retenciones");
                     $this->conceptoimpuestos->appendChild($this->conceptoimpuestosretenciones);
