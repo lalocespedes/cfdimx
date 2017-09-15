@@ -164,6 +164,15 @@ class Cfdi
                         $this->setAttribute($tax, 'conceptoimpuestosRetencion');
                     }
                 }
+
+                // Informacion aduanera
+
+                if(array_key_exists('InformacionAduanera', $item) && trim($item['InformacionAduanera']['NumeroPedimento'] !== '')) {
+                    
+                    $this->conceptoInformacionAduanera = $this->xml->createElement("cfdi:InformacionAduanera");
+                    $this->concepto->appendChild($this->conceptoInformacionAduanera);
+                    $this->setAttribute($item['InformacionAduanera'], 'conceptoInformacionAduanera');
+                }
             }
         }
     }
