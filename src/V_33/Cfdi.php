@@ -172,6 +172,8 @@ class Cfdi
                     $this->conceptoInformacionAduanera = $this->xml->createElement("cfdi:InformacionAduanera");
                     $this->concepto->appendChild($this->conceptoInformacionAduanera);
                     $this->setAttribute($item['InformacionAduanera'], 'conceptoInformacionAduanera');
+
+                    $this->conceptoInformacionAduanera->setAttribute('NumeroPedimento',$item['InformacionAduanera']['NumeroPedimento']);
                 }
             }
         }
