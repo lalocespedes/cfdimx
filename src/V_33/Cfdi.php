@@ -40,6 +40,9 @@ class Cfdi
     protected $traslado;
     protected $impuestosretenciones;
     protected $retencion;
+    protected $Complemento;
+    protected $Pagos;
+    protected $Pago;
 
     protected $cerfile;
     protected $certificado;
@@ -212,11 +215,6 @@ class Cfdi
 
     public function setImpuestosTraslados(array $data)
     {
-        // valid data
-
-        // dump($data);
-        // exit;
-
         if(!count($data)) {
             return false;
         }
@@ -231,6 +229,54 @@ class Cfdi
 
             $this->setAttribute($value, 'traslado');
         }
+    }
+
+    public function setComplementoPagos(array $data)
+    {
+        if(!count($data)) { return false; }
+
+        $this->Complemento = $this->xml->createElement("cfdi:Complemento");
+        $this->comprobante->appendChild($this->Complemento);
+
+        $this->Pagos = $this->xml->createElement("pago10:Pagos");
+        $this->Complemento->appendChild($this->Pagos);
+
+        $this->setAttribute([
+            "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance",
+            "xmlns:pago10" => "http://www.sat.gob.mx/Pagos",
+            "Version" => "1.0",
+            "xsi:schemaLocation" => "http://www.sat.gob.mx/Pagos http://www.sat.gob.mx/sitio_internet/cfd/Pagos/Pagos.xsd"
+        ], 'Pagos');
+
+        foreach ($data['Pagos'] as $key => $pago) {
+
+            $this->Pago = $this->xml->createElement("pago10:Pago");
+            $this->Pagos->appendChild($this->Pago);
+
+            $this->setAttribute([
+                "FechaPago" => $pago['FechaPago'],
+                "FormaDePagoP" => $pago['FormaDePagoP'],
+                "MonedaP" => $pago['MonedaP'],
+                "Monto" => $pago['Monto'],
+                "RfcEmisorCtaOrd" => $pago['RfcEmisorCtaOrd'],
+                "CtaOrdenante" => $pago['CtaOrdenante']
+            ], 'Pago');
+
+            foreach ($pago['doctos_rela'] as $key => $docto_rela) {
+                $this->DoctoRelacionado = $this->xml->createElement("pago10:DoctoRelacionado");
+                $this->Pago->appendChild($this->DoctoRelacionado);
+
+                $this->setAttribute([
+                    "IdDocumento" => $docto_rela['IdDocumento'],
+                    "MonedaDR" => $docto_rela['MonedaDR'],
+                    "MetodoDePagoDR" => $docto_rela['MetodoDePagoDR'],
+                    "NumParcialidad" => $docto_rela['NumParcialidad'],
+                    "ImpSaldoAnt" => $docto_rela['ImpSaldoAnt'],
+                    "ImpPagado" => $docto_rela['ImpPagado'],
+                    "ImpSaldoInsoluto" => $docto_rela['ImpSaldoInsoluto']
+                ], 'DoctoRelacionado');
+            }
+        }    
     }
     
     public function setCer($cer, $key)
@@ -275,9 +321,18 @@ class Cfdi
     private function setAttribute(array $data, $node)
     {
         foreach ($data as $key => $val) {
+
+            for ($i=0;$i<strlen($val); $i++) {
+                $a = substr($val,$i,1);
+                if ($a > chr(127) && $a !== chr(219) && $a !== chr(211) && $a !== chr(209)) {
+                    $val = substr_replace($val, ".", $i, 1);
+                }
+            }
+
 		    $val = preg_replace('/\s+/', ' ', $val); // Regla 5a y 5c
 		    $val = trim($val); // Regla 5b
-		    if (strlen($val)>0) { // Regla 6
+            if (strlen($val)>0) { // Regla 6
+                $val = str_replace(array('"','>','<'),"'",$val);  // &...;
 		        $val = utf8_encode(str_replace("|","/",$val)); // Regla 1
 		        $this->{$node}->setAttribute($key,$val);
 		    }
