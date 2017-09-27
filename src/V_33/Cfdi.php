@@ -248,33 +248,18 @@ class Cfdi
             "xsi:schemaLocation" => "http://www.sat.gob.mx/Pagos http://www.sat.gob.mx/sitio_internet/cfd/Pagos/Pagos.xsd"
         ], 'Pagos');
 
-        foreach ($data['Pagos'] as $key => $pago) {
+        foreach ($data as $key => $pago) {
 
             $this->Pago = $this->xml->createElement("pago10:Pago");
             $this->Pagos->appendChild($this->Pago);
 
-            $this->setAttribute([
-                "FechaPago" => $pago['FechaPago'],
-                "FormaDePagoP" => $pago['FormaDePagoP'],
-                "MonedaP" => $pago['MonedaP'],
-                "Monto" => $pago['Monto'],
-                "RfcEmisorCtaOrd" => $pago['RfcEmisorCtaOrd'],
-                "CtaOrdenante" => $pago['CtaOrdenante']
-            ], 'Pago');
+            $this->setAttribute($pago, 'Pago');
 
             foreach ($pago['doctos_rela'] as $key => $docto_rela) {
                 $this->DoctoRelacionado = $this->xml->createElement("pago10:DoctoRelacionado");
                 $this->Pago->appendChild($this->DoctoRelacionado);
 
-                $this->setAttribute([
-                    "IdDocumento" => $docto_rela['IdDocumento'],
-                    "MonedaDR" => $docto_rela['MonedaDR'],
-                    "MetodoDePagoDR" => $docto_rela['MetodoDePagoDR'],
-                    "NumParcialidad" => $docto_rela['NumParcialidad'],
-                    "ImpSaldoAnt" => $docto_rela['ImpSaldoAnt'],
-                    "ImpPagado" => $docto_rela['ImpPagado'],
-                    "ImpSaldoInsoluto" => $docto_rela['ImpSaldoInsoluto']
-                ], 'DoctoRelacionado');
+                $this->setAttribute($docto_rela, 'DoctoRelacionado');
             }
         }    
     }
