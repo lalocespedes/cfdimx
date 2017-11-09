@@ -7,7 +7,7 @@ use XSLTProcessor;
 use Exception;
 
 /**
- * 
+ *
  */
 class Cfdi
 {
@@ -22,7 +22,7 @@ class Cfdi
     protected $valid = true;
 
     public $xml;
-    
+
     protected $comprobante;
     protected $emisor;
     protected $receptor;
@@ -139,11 +139,11 @@ class Cfdi
                     $this->conceptoimpuestos = $this->xml->createElement("cfdi:Impuestos");
                     $this->concepto->appendChild($this->conceptoimpuestos);
                 }
-                
+
                 // Impuestos Traslados
 
                 if(array_key_exists('Traslados', $item['Impuestos']) && count($item['Impuestos']['Traslados'])) {
-                    
+
                     $this->conceptoimpuestosTraslados = $this->xml->createElement("cfdi:Traslados");
                     $this->conceptoimpuestos->appendChild($this->conceptoimpuestosTraslados);
 
@@ -156,8 +156,8 @@ class Cfdi
 
                 // Impuestos Retencion
 
-                if(array_key_exists('Retenciones', $item['Impuestos']) && count($item['Impuestos']['Retenciones'])) {                    
-                    
+                if(array_key_exists('Retenciones', $item['Impuestos']) && count($item['Impuestos']['Retenciones'])) {
+
                     $this->conceptoimpuestosretenciones = $this->xml->createElement("cfdi:Retenciones");
                     $this->conceptoimpuestos->appendChild($this->conceptoimpuestosretenciones);
 
@@ -171,7 +171,7 @@ class Cfdi
                 // Informacion aduanera
 
                 if(array_key_exists('InformacionAduanera', $item) && trim($item['InformacionAduanera']['NumeroPedimento'] !== '')) {
-                    
+
                     $this->conceptoInformacionAduanera = $this->xml->createElement("cfdi:InformacionAduanera");
                     $this->concepto->appendChild($this->conceptoInformacionAduanera);
                     $this->setAttribute($item['InformacionAduanera'], 'conceptoInformacionAduanera');
@@ -190,7 +190,7 @@ class Cfdi
         $this->comprobante->appendChild($this->impuestos);
 
         $this->setAttribute($data, 'impuestos');
-        
+
     }
 
     public function setImpuestosRetenciones(array $data)
@@ -205,7 +205,7 @@ class Cfdi
         $this->impuestos->appendChild($this->impuestosretenciones);
 
         foreach ($data as $key => $value) {
-            
+
             $this->retencion = $this->xml->createElement("cfdi:Retencion");
             $this->impuestosretenciones->appendChild($this->retencion);
 
@@ -223,7 +223,7 @@ class Cfdi
         $this->impuestos->appendChild($this->impuestostraslados);
 
         foreach ($data as $key => $value) {
-            
+
             $this->traslado = $this->xml->createElement("cfdi:Traslado");
             $this->impuestostraslados->appendChild($this->traslado);
 
@@ -261,24 +261,25 @@ class Cfdi
 
                 $this->setAttribute($docto_rela, 'DoctoRelacionado');
             }
-        }    
+        }
     }
-    
+
     public function setCer($cer, $key)
     {
-        $this->cerfile = $cer;
-        $this->keypemfile = $key;
+        // $this->cerfile = $cer;
+        // $this->keypemfile = $key;
 
-        $csd = new \lalocespedes\Cfdimx\Csd(dirname($this->cerfile));
-        $this->noCertificado = $csd->getnoCertificado($this->cerfile);
-        $this->cerfilecontent = $csd->getCer(basename($this->cerfile));
-        $this->keypemfilecontent = $csd->getKeyPem(basename($this->keypemfile));
+        // $csd = new \lalocespedes\Cfdimx\Csd(dirname($this->cerfile));
+        // $this->noCertificado = $csd->getnoCertificado($this->cerfile);
+        $this->noCertificado = \lalocespedes\Cfdimx\Csd::getnoCertificado($cer);
+        $this->cerfilecontent = $cer;
+        $this->keypemfilecontent = $key;
     }
 
     public function getXML()
     {
         if($this->valid) {
-            
+
             $this->Sellar();
 
             return $this->xml->saveXml();
@@ -297,7 +298,7 @@ class Cfdi
     {
         return !empty($this->errors);
     }
-    
+
     public function errors()
     {
         return $this->errors;
@@ -318,7 +319,7 @@ class Cfdi
 		    $val = trim($val); // Regla 5b
             if (strlen($val)>0) { // Regla 6
                 $val = str_replace(array('"','>','<'),"'",$val);  // &...;
-		        $val = utf8_encode(str_replace("|","/",$val)); // Regla 1
+		        // $val = utf8_encode(str_replace("|","/",$val)); // Regla 1
 		        $this->{$node}->setAttribute($key,$val);
 		    }
 		}
@@ -333,19 +334,19 @@ class Cfdi
         $proc->importStyleSheet($xsl);
         $new = new \DOMDocument("1.0","UTF-8");
         $new->loadXML($this->xml->saveXml());
-        
+
         $cadena_original = $proc->transformToXML($new);
 
         return $cadena_original;
     }
-    
+
     private function Sellar()
     {
         $cer64 = str_replace(array('\n', '\r'), '', base64_encode($this->cerfilecontent));
         $this->comprobante->setAttribute('Certificado', $cer64);
         $this->comprobante->setAttribute('NoCertificado', $this->noCertificado);
 
-        $private = openssl_get_privatekey(file_get_contents($this->keypemfile));
+        $private = openssl_get_privatekey($this->keypemfilecontent);
         openssl_sign($this->getCadenaOriginal(), $sig, $private, OPENSSL_ALGO_SHA256);
         openssl_free_key($private);
 

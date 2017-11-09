@@ -7,7 +7,7 @@ use League\Flysystem\Adapter\Local;
 use Carbon\Carbon;
 
 /**
- * 
+ *
  */
  class Csd
 {
@@ -27,10 +27,15 @@ use Carbon\Carbon;
         return $this->fs->read($file);
     }
 
-    public function getnoCertificado($filepath)
+    static function getnoCertificado($cer)
     {
+        $certemp = tempnam('/tmp', 'cer');
+        $fp = fopen($certemp, 'w');
+        fwrite($fp, $cer);
+        fclose($fp);
+
         $SerieCer = "";
-        $xserial = exec('openssl x509 -inform DER -in '.$filepath.' -serial -noout');
+        $xserial = exec('openssl x509 -inform DER -in '.$certemp.' -serial -noout');
 
         $serie = str_replace('serial=', '', $xserial);
         $serie = str_split($serie);
@@ -41,6 +46,7 @@ use Carbon\Carbon;
             $i++;
         }
 
+        unlink($certemp);
         return $SerieCer;
 
     }
