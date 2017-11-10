@@ -74,7 +74,7 @@ class Cfdi
 
     public function setCfdiRelacionados(array $data)
     {
-        if(!count($data)) {
+        if(!$data['TipoRelacion']) {
             return false;
         }
 
