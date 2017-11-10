@@ -91,7 +91,7 @@ class Cfdi
             $this->CfdiRelacionados->appendChild($this->CfdiRelacionado);
 
             $this->setAttribute([
-                'UUID' => $item['UUID']
+                'UUID' => $item
             ], 'CfdiRelacionado');
 
         }
