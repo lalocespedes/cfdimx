@@ -43,6 +43,11 @@ class Cfdi
     protected $Complemento;
     protected $Pagos;
     protected $Pago;
+    protected $ComercioExterior;
+    protected $ComercioExteriorReceptor;
+    protected $ComercioExteriorReceptorDomicilio;
+    protected $ComercioExteriorMercancias;
+    protected $ComercioExteriorMercancia;
 
     protected $cerfile;
     protected $certificado;
@@ -264,13 +269,47 @@ class Cfdi
         }
     }
 
+    public function setComplementoComercioExterior(array $data)
+    {
+        if(!count($data)) { return false; }
+
+        //  dd($data);
+        // exit;
+
+        $this->Complemento = $this->xml->createElement("cfdi:Complemento");
+        $this->comprobante->appendChild($this->Complemento);
+
+        $this->setAttribute([
+            "xmlns:cce11"=>"http://www.sat.gob.mx/ComercioExterior11"
+        ], 'comprobante');
+
+        $this->ComercioExterior = $this->xml->createElement("cce11:ComercioExterior");
+        $this->Complemento->appendChild($this->ComercioExterior);
+
+        $this->setAttribute($data['header'], 'ComercioExterior');
+
+        $this->ComercioExteriorReceptor = $this->xml->createElement("cce11:Receptor");
+        $this->ComercioExterior->appendChild($this->ComercioExteriorReceptor);
+
+        $this->ComercioExteriorReceptorDomicilio = $this->xml->createElement("cce11:Domicilio");
+        $this->ComercioExteriorReceptor->appendChild($this->ComercioExteriorReceptorDomicilio);
+
+        $this->setAttribute($data['receptor']['Domicilio'], 'ComercioExteriorReceptorDomicilio');
+
+        $this->ComercioExteriorMercancias = $this->xml->createElement("cce11:Mercancias");
+        $this->ComercioExterior->appendChild($this->ComercioExteriorMercancias);
+
+        $this->ComercioExteriorMercancia = $this->xml->createElement("cce11:Mercancia");
+        $this->ComercioExteriorMercancias->appendChild($this->ComercioExteriorMercancia);
+
+        foreach ($data['mercancias'] as $key => $value) {
+            
+            $this->setAttribute($value, 'ComercioExteriorMercancia');
+        }
+    }
+
     public function setCer($cer, $key)
     {
-        // $this->cerfile = $cer;
-        // $this->keypemfile = $key;
-
-        // $csd = new \lalocespedes\Cfdimx\Csd(dirname($this->cerfile));
-        // $this->noCertificado = $csd->getnoCertificado($this->cerfile);
         $this->noCertificado = \lalocespedes\Cfdimx\Csd::getnoCertificado($cer);
         $this->cerfilecontent = $cer;
         $this->keypemfilecontent = $key;

@@ -35,7 +35,7 @@ use Carbon\Carbon;
         fclose($fp);
 
         $SerieCer = "";
-        $xserial = exec('openssl x509 -inform DER -in '.$certemp.' -serial -noout');
+        $xserial = exec('openssl x509 -inform DER -in '. realpath($certemp).' -serial -noout');
 
         $serie = str_replace('serial=', '', $xserial);
         $serie = str_split($serie);
@@ -46,7 +46,7 @@ use Carbon\Carbon;
             $i++;
         }
 
-        unlink($certemp);
+        unlink(realpath($certemp));
         return $SerieCer;
 
     }
