@@ -291,6 +291,8 @@ class Cfdi
         $this->ComercioExteriorReceptor = $this->xml->createElement("cce11:Receptor");
         $this->ComercioExterior->appendChild($this->ComercioExteriorReceptor);
 
+        $this->setAttribute($data['receptor'], 'ComercioExteriorReceptor');
+
         $this->ComercioExteriorReceptorDomicilio = $this->xml->createElement("cce11:Domicilio");
         $this->ComercioExteriorReceptor->appendChild($this->ComercioExteriorReceptorDomicilio);
 
@@ -303,7 +305,7 @@ class Cfdi
         $this->ComercioExteriorMercancias->appendChild($this->ComercioExteriorMercancia);
 
         foreach ($data['mercancias'] as $key => $value) {
-            
+
             $this->setAttribute($value, 'ComercioExteriorMercancia');
         }
     }
