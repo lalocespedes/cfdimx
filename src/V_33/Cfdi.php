@@ -349,22 +349,22 @@ class Cfdi
     {
         foreach ($data as $key => $val) {
 
-            for ($i=0;$i<strlen($val); $i++) {
-                $a = substr($val,$i,1);
-                if ($a > chr(127) && $a !== chr(219) && $a !== chr(211) && $a !== chr(209)) {
-                    $val = substr_replace($val, ".", $i, 1);
-                }
-            }
+            // for ($i=0;$i<strlen($val); $i++) {
+            //     $a = substr($val,$i,1);
+            //     if ($a > chr(127) && $a !== chr(219) && $a !== chr(211) && $a !== chr(209)) {
+            //         $val = substr_replace($val, ".", $i, 1);
+            //     }
+            // }
 
-		    $val = preg_replace('/\s+/', ' ', $val); // Regla 5a y 5c
-		    $val = trim($val); // Regla 5b
+            // $val = preg_replace('/\s+/', ' ', $val); // Regla 5a y 5c
+            $val = preg_replace('/\s\s+/', ' ', $val);   // Regla 5a y 5c
+            $val = trim($val); // Regla 5b
             if (strlen($val)>0) { // Regla 6
-                $val = str_replace(array('"','>','<'),"'",$val);  // &...;
-		        // $val = utf8_encode(str_replace("|","/",$val)); // Regla 1
-		        $this->{$node}->setAttribute($key,$val);
-		    }
-		}
-
+                // $val = str_replace(array('"','>','<'),"'",$val);  // &...;
+                $val = utf8_encode(str_replace("|","/",$val)); // Regla 1
+                $this->{$node}->setAttribute($key,$val);
+            }
+        }
     }
 
     public function getCadenaOriginal()
