@@ -48,6 +48,8 @@ class Cfdi
     protected $ComercioExteriorReceptorDomicilio;
     protected $ComercioExteriorMercancias;
     protected $ComercioExteriorMercancia;
+    protected $OtrosDerechosImpuestos;
+    protected $TrasladosLocales;
 
     protected $cerfile;
     protected $certificado;
@@ -308,6 +310,34 @@ class Cfdi
 
             $this->setAttribute($value, 'ComercioExteriorMercancia');
         }
+    }
+
+    public function setComplementoOtrosDerechosImpuestos(array $data)
+    {
+        if(!count($data)) { return false; }
+
+        // todo separar
+        // $OtrosDerechosImpuestos = new \lalocespedes\Cfdimx\Complementos\Cfdi\OtrosDerechosImpuestos();
+
+        $this->Complemento = $this->xml->createElement("cfdi:Complemento");
+        $this->comprobante->appendChild($this->Complemento);
+
+        $this->OtrosDerechosImpuestos = $this->xml->createElement("implocal:ImpuestosLocales");
+        $this->Complemento->appendChild($this->OtrosDerechosImpuestos);
+
+        $this->setAttribute([
+            "xmlns:implocal"=>"http://www.sat.gob.mx/implocal",
+            "version" => "1.0",
+            "TotaldeRetenciones" => $data['totalImpuestosLocalesRetenciones'],
+            "TotaldeTraslados" => $data['totalImpuestosLocalesTrasladados']
+        ], 'OtrosDerechosImpuestos');
+
+        foreach ($data['ImpuestosLocalesTraslados'] as $key => $local) {
+            $this->TrasladosLocales = $this->xml->createElement("implocal:TrasladosLocales");
+            $this->OtrosDerechosImpuestos->appendChild($this->TrasladosLocales);
+            $this->setAttribute($local, 'TrasladosLocales');
+        }
+
     }
 
     public function setCer($cer, $key)
