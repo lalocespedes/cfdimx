@@ -71,6 +71,11 @@ class Cfdi
             $this->xml->createElementNS("http://www.sat.gob.mx/cfd/3","cfdi:Comprobante")
         );
 
+        $this->setAttribute([
+            "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance",
+            "xsi:schemaLocation"=>"http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd"
+        ], 'comprobante');
+
         $this->setAttribute($data, 'comprobante');
 
         $this->comprobante->setAttribute('Certificado', str_replace(array('\n', '\r'), '', base64_encode($this->cerfilecontent)));
