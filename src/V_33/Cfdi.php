@@ -333,8 +333,8 @@ class Cfdi
         $this->setAttribute([
             "xmlns:implocal"=>"http://www.sat.gob.mx/implocal",
             "version" => "1.0",
-            "TotaldeRetenciones" => $data['totalImpuestosLocalesRetenciones'],
-            "TotaldeTraslados" => $data['totalImpuestosLocalesTrasladados']
+            "TotaldeRetenciones" => substr($data['totalImpuestosLocalesRetenciones'],0,strpos($data['totalImpuestosLocalesRetenciones'],".") + 3),
+            "TotaldeTraslados" => substr($data['totalImpuestosLocalesTrasladados'],0,strpos($data['totalImpuestosLocalesTrasladados'],".") + 3)
         ], 'OtrosDerechosImpuestos');
 
         foreach ($data['ImpuestosLocalesTraslados'] as $key => $local) {
