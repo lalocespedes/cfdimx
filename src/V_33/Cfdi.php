@@ -256,8 +256,11 @@ class Cfdi
         $this->setAttribute([
             "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance",
             "xmlns:pago10" => "http://www.sat.gob.mx/Pagos",
-            "Version" => "1.0",
-            "xsi:schemaLocation" => "http://www.sat.gob.mx/Pagos http://www.sat.gob.mx/sitio_internet/cfd/Pagos/Pagos.xsd"
+            "xsi:schemaLocation" => "http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd http://www.sat.gob.mx/Pagos http://www.sat.gob.mx/sitio_internet/cfd/Pagos/Pagos10.xsd"
+        ], 'comprobante');
+
+        $this->setAttribute([
+            "Version" => "1.0"
         ], 'Pagos');
 
         foreach ($data as $key => $pago) {
