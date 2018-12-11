@@ -50,6 +50,7 @@ class Cfdi
     protected $ComercioExteriorMercancia;
     protected $OtrosDerechosImpuestos;
     protected $TrasladosLocales;
+    protected $RetencionesLocales;
 
     protected $cerfile;
     protected $certificado;
@@ -336,7 +337,7 @@ class Cfdi
         $this->setAttribute([
             "xmlns:implocal"=>"http://www.sat.gob.mx/implocal",
             "version" => "1.0",
-            "TotaldeRetenciones" => substr($data['totalImpuestosLocalesRetenciones'],0,strpos($data['totalImpuestosLocalesRetenciones'],".") + 3),
+            "TotaldeRetenciones" => substr($data['ImpuestosLocales']['TotaldeRetenciones'],0,strpos($data['ImpuestosLocales']['TotaldeRetenciones'],".") + 3),
             "TotaldeTraslados" => substr($data['totalImpuestosLocalesTrasladados'],0,strpos($data['totalImpuestosLocalesTrasladados'],".") + 3)
         ], 'OtrosDerechosImpuestos');
 
@@ -344,6 +345,12 @@ class Cfdi
             $this->TrasladosLocales = $this->xml->createElement("implocal:TrasladosLocales");
             $this->OtrosDerechosImpuestos->appendChild($this->TrasladosLocales);
             $this->setAttribute($local, 'TrasladosLocales');
+        }
+
+        foreach ($data['ImpuestosLocales']['implocal:RetencionesLocales'] as $key => $local) {
+            $this->RetencionesLocales = $this->xml->createElement("implocal:RetencionesLocales");
+            $this->OtrosDerechosImpuestos->appendChild($this->RetencionesLocales);
+            $this->setAttribute($local, 'RetencionesLocales');
         }
 
     }
