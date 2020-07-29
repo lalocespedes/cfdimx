@@ -44,13 +44,14 @@ class Cfdi
     protected $Pagos;
     protected $Pago;
     protected $ComercioExterior;
+    protected $ComercioExteriorEmisor;
+    protected $ComercioExteriorEmisorDomicilio;
     protected $ComercioExteriorReceptor;
     protected $ComercioExteriorReceptorDomicilio;
     protected $ComercioExteriorMercancias;
     protected $ComercioExteriorMercancia;
     protected $OtrosDerechosImpuestos;
     protected $TrasladosLocales;
-    protected $RetencionesLocales;
 
     protected $cerfile;
     protected $certificado;
@@ -183,13 +184,18 @@ class Cfdi
 
                 // Informacion aduanera
 
-                if(array_key_exists('InformacionAduanera', $item) && trim($item['InformacionAduanera']['NumeroPedimento'] !== '')) {
+                if(array_key_exists('pedimentos', $item) && count($item['pedimentos']) > 0) {
 
-                    $this->conceptoInformacionAduanera = $this->xml->createElement("cfdi:InformacionAduanera");
-                    $this->concepto->appendChild($this->conceptoInformacionAduanera);
-                    $this->setAttribute($item['InformacionAduanera'], 'conceptoInformacionAduanera');
+                    foreach ($item['pedimentos'] as $key => $pedimento) {
 
-                    $this->conceptoInformacionAduanera->setAttribute('NumeroPedimento',$item['InformacionAduanera']['NumeroPedimento']);
+                        if(!empty($pedimento['NumeroPedimento'])) {
+                            $this->conceptoInformacionAduanera = $this->xml->createElement("cfdi:InformacionAduanera");
+                            $this->concepto->appendChild($this->conceptoInformacionAduanera);
+                            $this->setAttribute($pedimento, 'conceptoInformacionAduanera');
+        
+                            $this->conceptoInformacionAduanera->setAttribute('NumeroPedimento', $pedimento);   
+                        }
+                    }
                 }
             }
         }
@@ -269,7 +275,7 @@ class Cfdi
             $this->Pago = $this->xml->createElement("pago10:Pago");
             $this->Pagos->appendChild($this->Pago);
 
-            $this->setAttribute($pago['Attributes'], 'Pago');
+            $this->setAttribute($pago, 'Pago');
 
             foreach ($pago['doctos_rela'] as $key => $docto_rela) {
                 $this->DoctoRelacionado = $this->xml->createElement("pago10:DoctoRelacionado");
@@ -299,6 +305,18 @@ class Cfdi
 
         $this->setAttribute($data['header'], 'ComercioExterior');
 
+        // Emisor
+
+        $this->ComercioExteriorEmisor = $this->xml->createElement("cce11:Emisor");
+        $this->ComercioExterior->appendChild($this->ComercioExteriorEmisor);
+        $this->setAttribute($data['emisor'], 'ComercioExteriorEmisor');
+
+        $this->ComercioExteriorEmisorDomicilio = $this->xml->createElement("cce11:Domicilio");
+        $this->ComercioExteriorEmisor->appendChild($this->ComercioExteriorEmisorDomicilio);
+        $this->setAttribute($data['emisor']['Domicilio'], 'ComercioExteriorEmisorDomicilio');
+
+        // Receptor
+
         $this->ComercioExteriorReceptor = $this->xml->createElement("cce11:Receptor");
         $this->ComercioExterior->appendChild($this->ComercioExteriorReceptor);
 
@@ -312,11 +330,10 @@ class Cfdi
         $this->ComercioExteriorMercancias = $this->xml->createElement("cce11:Mercancias");
         $this->ComercioExterior->appendChild($this->ComercioExteriorMercancias);
 
-        $this->ComercioExteriorMercancia = $this->xml->createElement("cce11:Mercancia");
-        $this->ComercioExteriorMercancias->appendChild($this->ComercioExteriorMercancia);
-
         foreach ($data['mercancias'] as $key => $value) {
 
+            $this->ComercioExteriorMercancia = $this->xml->createElement("cce11:Mercancia");
+            $this->ComercioExteriorMercancias->appendChild($this->ComercioExteriorMercancia);
             $this->setAttribute($value, 'ComercioExteriorMercancia');
         }
     }
@@ -337,20 +354,14 @@ class Cfdi
         $this->setAttribute([
             "xmlns:implocal"=>"http://www.sat.gob.mx/implocal",
             "version" => "1.0",
-            "TotaldeRetenciones" => substr($data['ImpuestosLocales']['TotaldeRetenciones'],0,strpos($data['ImpuestosLocales']['TotaldeRetenciones'],".") + 3),
-            "TotaldeTraslados" => substr($data['totalImpuestosLocalesTrasladados'],0,strpos($data['totalImpuestosLocalesTrasladados'],".") + 3)
+            "TotaldeRetenciones" => $data['totalImpuestosLocalesRetenciones'],
+            "TotaldeTraslados" => $data['totalImpuestosLocalesTrasladados']
         ], 'OtrosDerechosImpuestos');
 
         foreach ($data['ImpuestosLocalesTraslados'] as $key => $local) {
             $this->TrasladosLocales = $this->xml->createElement("implocal:TrasladosLocales");
             $this->OtrosDerechosImpuestos->appendChild($this->TrasladosLocales);
             $this->setAttribute($local, 'TrasladosLocales');
-        }
-
-        foreach ($data['ImpuestosLocales']['implocal:RetencionesLocales'] as $key => $local) {
-            $this->RetencionesLocales = $this->xml->createElement("implocal:RetencionesLocales");
-            $this->OtrosDerechosImpuestos->appendChild($this->RetencionesLocales);
-            $this->setAttribute($local, 'RetencionesLocales');
         }
 
     }
@@ -402,12 +413,12 @@ class Cfdi
             // }
 
             // $val = preg_replace('/\s+/', ' ', $val); // Regla 5a y 5c
-            $val = preg_replace('/\s\s+/', ' ', $val);   // Regla 5a y 5c
+            // // $val = preg_replace('/\s\s+/', ' ', $val);   // Regla 5a y 5c
             $val = trim($val); // Regla 5b
             if (strlen($val)>0) { // Regla 6
                 $val = str_replace(array('"','>','<'),"'",$val);  // &...;
-                // $val = utf8_encode(str_replace("|","/",$val)); // Regla 1
-                $val = str_replace("|","/",$val); // Regla 1
+                // $val = str_replace("|","/",$val); // Regla 1
+                $val = utf8_encode(str_replace("|","/",$val)); // Regla 1
                 $this->{$node}->setAttribute($key,$val);
             }
         }
