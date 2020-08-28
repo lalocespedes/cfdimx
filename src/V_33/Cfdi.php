@@ -192,8 +192,8 @@ class Cfdi
                             $this->conceptoInformacionAduanera = $this->xml->createElement("cfdi:InformacionAduanera");
                             $this->concepto->appendChild($this->conceptoInformacionAduanera);
                             $this->setAttribute($pedimento, 'conceptoInformacionAduanera');
-        
-                            $this->conceptoInformacionAduanera->setAttribute('NumeroPedimento', $pedimento);   
+
+                            $this->conceptoInformacionAduanera->setAttribute('NumeroPedimento', $pedimento);
                         }
                     }
                 }
@@ -290,14 +290,12 @@ class Cfdi
     {
         if(!count($data)) { return false; }
 
-        //  dd($data);
-        // exit;
-
         $this->Complemento = $this->xml->createElement("cfdi:Complemento");
         $this->comprobante->appendChild($this->Complemento);
 
         $this->setAttribute([
-            "xmlns:cce11"=>"http://www.sat.gob.mx/ComercioExterior11"
+            "xmlns:cce11"=>"http://www.sat.gob.mx/ComercioExterior11",
+			"xsi:schemaLocation" => "http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd http://www.sat.gob.mx/ComercioExterior11 http://www.sat.gob.mx/sitio_internet/cfd/ComercioExterior11/ComercioExterior11.xsd"
         ], 'comprobante');
 
         $this->ComercioExterior = $this->xml->createElement("cce11:ComercioExterior");
