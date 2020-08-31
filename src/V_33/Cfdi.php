@@ -275,9 +275,7 @@ class Cfdi
             $this->Pago = $this->xml->createElement("pago10:Pago");
             $this->Pagos->appendChild($this->Pago);
 
-            foreach ($pago['Attributes'] as $key => $attribute) {
-                $this->setAttribute($attribute, 'Pago');
-            }
+            $this->setAttribute($pago['Attributes'], 'Pago');
 
             foreach ($pago['doctos_rela'] as $key => $docto_rela) {
                 $this->DoctoRelacionado = $this->xml->createElement("pago10:DoctoRelacionado");
