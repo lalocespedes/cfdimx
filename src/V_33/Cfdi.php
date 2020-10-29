@@ -350,10 +350,16 @@ class Cfdi
         $this->Complemento->appendChild($this->OtrosDerechosImpuestos);
 
         $this->setAttribute([
-            "xmlns:implocal"=>"http://www.sat.gob.mx/implocal",
+            "xsi:schemaLocation" => "http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd http://www.sat.gob.mx/implocal http://www.sat.gob.mx/sitio_internet/cfd/implocal/implocal.xsd",
+            "xmlns:implocal" => "http://www.sat.gob.mx/implocal",
+            "xmlns:cfdi" => "http://www.sat.gob.mx/cfd/3",
+            "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance"
+        ], 'comprobante');
+
+        $this->setAttribute([
             "version" => "1.0",
-            "TotaldeRetenciones" => $data['totalImpuestosLocalesRetenciones'],
-            "TotaldeTraslados" => $data['totalImpuestosLocalesTrasladados']
+            "TotaldeRetenciones" => substr($data['ImpuestosLocales']['TotaldeRetenciones'],0,strpos($data['ImpuestosLocales']['TotaldeRetenciones'],".") + 3),
+            "TotaldeTraslados" => substr($data['totalImpuestosLocalesTrasladados'],0,strpos($data['totalImpuestosLocalesTrasladados'],".") + 3)
         ], 'OtrosDerechosImpuestos');
 
         foreach ($data['ImpuestosLocalesTraslados'] as $key => $local) {
