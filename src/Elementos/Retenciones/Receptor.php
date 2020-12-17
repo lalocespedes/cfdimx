@@ -3,11 +3,12 @@
 namespace lalocespedes\Cfdimx\Elementos\Retenciones;
 
 /**
- * 
+ *
  */
 class Receptor
 {
     protected $receptor;
+    protected $nacionalidad;
 
     function __construct($xml, $retenciones, array $data)
     {
@@ -21,8 +22,8 @@ class Receptor
 
         // Add nodo Nacionalidad
 
-        $this->$data['Nacionalidad'] = $xml->createElement("retenciones:".$data['Nacionalidad']);
-        $this->receptor->appendChild($this->$data['Nacionalidad']);
+        $this->nacionalidad = $xml->createElement("retenciones:".$data['Nacionalidad']);
+        $this->receptor->appendChild($this->nacionalidad);
 
         $this->setAttribute([
             "CURPR" => (in_array('CURPR', $data)) ? $data['CURPR'] : '',
@@ -30,8 +31,7 @@ class Receptor
             "RFCRecep" => $data['RFCRecep'],
             "CURPR" => $data['CURPR'],
             "NumRegIdTrib" => $data['NumRegIdTrib']
-        ], $data['Nacionalidad']);
-
+        ], "nacionalidad");
     }
 
     public function appendChild($value)
