@@ -258,4 +258,17 @@ class Retenciones
     {
         return $this->errors;
     }
+
+    public static function getCadenaOriginal($xml)
+    {
+        $xsl = new DOMDocument("1.0", "UTF-8");
+        $xsl->load(__DIR__ . '/../utils/xslt/cadenaoriginal_3_3.xslt');
+        $proc = new XSLTProcessor;
+        $proc->importStyleSheet($xsl);
+        $new = new \DOMDocument("1.0", "UTF-8");
+        $new->loadXML($xml);
+
+        $cadena_original = $proc->transformToXML($new);
+        return $cadena_original;
+    }
 }
