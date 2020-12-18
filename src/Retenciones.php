@@ -13,19 +13,20 @@ use lalocespedes\Cfdimx\Elementos\Retenciones\Complemento;
 use lalocespedes\Cfdimx\Elementos\Retenciones\Complementos\PagosExtranjeros;
 
 use Respect\Validation\Validator as v;
+
 /**
- * 
+ *
  */
 class Retenciones
 {
     /**
-    * @var array
-    */
+     * @var array
+     */
     protected $errors = [];
 
     /**
-    * @var bool
-    */
+     * @var bool
+     */
     protected $valid = true;
 
     protected $cerfile;
@@ -44,7 +45,7 @@ class Retenciones
     protected $datareceptor;
     protected $dataperiodo;
     protected $datatotales;
-    protected $dataimpretenidos;
+    protected $dataimpretenidos = [];
     protected $datacomplemento = [];
     protected $datacomplementopagosextranjeros = [];
 
@@ -54,22 +55,22 @@ class Retenciones
     }
 
     /**
-	* Sets the data Retenciones
-	* @param array $data
-	*/
-	public function setRetenciones(array $data = [])
-	{
+     * Sets the data Retenciones
+     * @param array $data
+     */
+    public function setRetenciones(array $data = [])
+    {
         $valid = new \lalocespedes\Cfdimx\Validation\Retenciones;
 
         $this->dataretenciones = $data;
     }
 
     /**
-	* Sets the data Emisor
-	* @param array $data
-	*/
-	public function setEmisor(array $data)
-	{
+     * Sets the data Emisor
+     * @param array $data
+     */
+    public function setEmisor(array $data)
+    {
         // Valid data
         $valid = new \lalocespedes\Cfdimx\Validation\Emisor;
         $valid->validate($data, [
@@ -87,9 +88,9 @@ class Retenciones
     }
 
     /**
-	* Sets the data Receptor
-	* @param array $data
-	*/
+     * Sets the data Receptor
+     * @param array $data
+     */
     public function setReceptor(array $data)
     {
         // $valid = new \lalocespedes\Cfdimx\Validation\Receptor;
@@ -103,15 +104,14 @@ class Retenciones
         //     $this->valid = false;
         //     return $this->errors = $valid->errors();
         // }
-        
-        $this->datareceptor = $data;
 
+        $this->datareceptor = $data;
     }
 
     /**
-	* Sets the data Periodo
-	* @param array $data
-	*/
+     * Sets the data Periodo
+     * @param array $data
+     */
     public function setPeriodo(array $data)
     {
         // $valid = new \lalocespedes\Cfdimx\Validation\Receptor;
@@ -125,52 +125,51 @@ class Retenciones
         //     $this->valid = false;
         //     return $this->errors = $valid->errors();
         // }
-        
-        $this->dataperiodo = $data;
 
+        $this->dataperiodo = $data;
     }
 
     /**
-	* Sets the data Totales
-	* @param array $data
-	*/
+     * Sets the data Totales
+     * @param array $data
+     */
     public function setTotales(array $data)
     {
         $this->datatotales = $data;
     }
 
     /**
-	* Sets the data ImpRetenidos
-	* @param array $data
-	*/
+     * Sets the data ImpRetenidos
+     * @param array $data
+     */
     public function setImpRetenidos(array $data)
     {
         $this->dataimpretenidos = $data;
     }
 
     /**
-	* Sets the data Dividendos
-	* @param array $data
-	*/
+     * Sets the data Dividendos
+     * @param array $data
+     */
     public function setComplemento(array $data)
     {
         $this->datacomplemento = $data;
     }
 
     /**
-	* Sets the data Dividendos
-	* @param array $data
-	*/
+     * Sets the data Dividendos
+     * @param array $data
+     */
     public function setComplementoPagosExtranjeros(array $data)
     {
         $this->datacomplementopagosextranjeros = $data;
     }
 
     /**
-	* Sets the files Certificado
-	* @param file $cer
-    * @param file $key
-	*/
+     * Sets the files Certificado
+     * @param file $cer
+     * @param file $key
+     */
     public function setCertificado($cer, $key)
     {
         $this->cerfile = $cer;
@@ -179,9 +178,9 @@ class Retenciones
 
     public function build()
     {
-        $this->xml = new DOMdocument("1.0","UTF-8");
+        $this->xml = new DOMdocument("1.0", "UTF-8");
 
-        if(is_null($this->dataretenciones)) {
+        if (is_null($this->dataretenciones)) {
             $this->errors = [
                 "please setRetenciones node"
             ];
@@ -199,12 +198,12 @@ class Retenciones
 
         $this->totales = new Totales($this->xml, $this->retenciones, $this->datatotales, $this->dataimpretenidos);
 
-        if(count($this->datacomplemento)) {
+        if (count($this->datacomplemento)) {
 
             $this->complemento = new Complemento($this->xml, $this->retenciones, $this->datacomplemento);
         }
 
-        if(count($this->datacomplementopagosextranjeros)) {
+        if (count($this->datacomplementopagosextranjeros)) {
 
             $this->complementopagosextranjeros = new PagosExtranjeros($this->xml, $this->retenciones, $this->datacomplementopagosextranjeros);
         }
@@ -213,65 +212,42 @@ class Retenciones
 
         $this->xml->formatOutput = true;
 
-        // dd($this->xml->saveXML());
-
         // sellar xml
-        if(is_null($this->cerfile) || is_null($this->keypemfile)) {
+        if (is_null($this->cerfile) || is_null($this->keypemfile)) {
             $this->errors = [
                 "please set setCertificado"
-            ]; 
+            ];
             $this->valid = false;
             return $this;
         }
         //Get CSD
         try {
-            
-            if (!file_exists($this->cerfile)) {
-                $this->errors = [
-                    "cer file not found"
-                ]; 
-                $this->valid = false;
-                return $this;
-            }
-
-            if (!file_exists($this->keypemfile)) {
-                $this->errors = [
-                    "key.pem file not found"
-                ]; 
-                $this->valid = false;
-                return $this;
-            }
-
-            $csd = new \lalocespedes\Cfdimx\Csd(dirname($this->cerfile));
-            $this->cerfilecontent = $csd->getCer(basename($this->cerfile));
-            $this->keypemfilecontent = $csd->getKeyPem(basename($this->keypemfile));
+            $csd = new \lalocespedes\Cfdimx\Csd(dirname('/'));
             $this->noCertificado = $csd->getnoCertificado($this->cerfile);
-
-        } catch ( \League\Flysystem\FileNotFoundException $e) {
+        } catch (\League\Flysystem\FileNotFoundException $e) {
             $this->errors = [
                 $e->getMessage()
-            ]; 
+            ];
             $this->valid = false;
             return $this;
         }
-        
-        $sello = new \lalocespedes\Cfdimx\Sello();
-        $this->xml = $sello->getSello($this->xml->saveXML(), $this->cerfilecontent, $this->keypemfilecontent, $this->noCertificado);
 
+        $sello = new \lalocespedes\Cfdimx\Sello();
+        $this->xml = $sello->getSello($this->xml->saveXML(), $this->cerfile, $this->keypemfile, $this->noCertificado);
         return $this;
     }
 
     public function getXml()
     {
-        if($this->valid) {
-            
+        if ($this->valid) {
+
             return $this->xml;
         }
 
         $this->xml = null;
 
         return $this->errors();
-	}
+    }
 
     public function failed()
     {
