@@ -197,6 +197,18 @@ class Cfdi
                         }
                     }
                 }
+
+                // Cuenta Predial
+
+                if(array_key_exists('CuentaPredial', $item) && !is_null($item['CuentaPredial']['Numero'])) {
+
+                    $this->conceptoCuentaPredial = $this->xml->createElement("cfdi:CuentaPredial");
+                    $this->concepto->appendChild($this->conceptoCuentaPredial);
+                    $this->setAttribute($item['CuentaPredial'], 'conceptoCuentaPredial');
+
+                    $this->conceptoCuentaPredial->setAttribute('Numero', $item['CuentaPredial']['Numero']);
+                }
+
             }
         }
     }
