@@ -5,6 +5,11 @@ namespace lalocespedes\Cfdimx\V_33;
 use DOMDocument;
 use XSLTProcessor;
 use Exception;
+use lalocespedes\Cfdimx\CadenaOriginal;
+use lalocespedes\Cfdimx\Csd;
+use lalocespedes\Cfdimx\V_33\NodeComprobante;
+use Respect\Validation\Validator as v;
+use Respect\Validation\Exceptions\NestedValidationException;
 
 /**
  *
@@ -12,18 +17,21 @@ use Exception;
 class Cfdi
 {
     /**
-    * @var array
-    */
-    protected $errors = [];
+     * @var array
+     */
+    public $errors = [];
 
     /**
-    * @var bool
-    */
+     * @var bool
+     */
     protected $valid = true;
 
+    /**
+     * @var DOMdocument
+     */
     public $xml;
 
-    protected $comprobante;
+    protected $nodeComprobante;
     protected $emisor;
     protected $receptor;
     protected $conceptos;
@@ -53,47 +61,26 @@ class Cfdi
     protected $OtrosDerechosImpuestos;
     protected $TrasladosLocales;
 
-    protected $cerfile;
-    protected $certificado;
-    protected $noCertificado;
-    protected $cerfilecontent;
-    protected $keypemfilecontent;
-
     function __construct()
     {
-        $this->xml = new DOMdocument("1.0","UTF-8");
+        $this->xml = new DOMdocument("1.0", "UTF-8");
         $this->xml->formatOutput = true;
     }
 
-    public function setComprobante(array $data)
+    public function setNodeComprobante(array $data)
     {
-        // valid data
-
-        $this->comprobante = $this->xml->appendChild(
-            $this->xml->createElementNS("http://www.sat.gob.mx/cfd/3","cfdi:Comprobante")
-        );
-
-        $this->setAttribute([
-            "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance",
-            "xsi:schemaLocation"=>"http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd"
-        ], 'comprobante');
-
-        $this->setAttribute($data, 'comprobante');
-
-        $this->comprobante->setAttribute('Certificado', str_replace(array('\n', '\r'), '', base64_encode($this->cerfilecontent)));
-        $this->comprobante->setAttribute('Sello', "");
-        $this->comprobante->setAttribute('NoCertificado', $this->noCertificado);
-
+        $NodeComprobante = new NodeComprobante($this->xml);
+        $this->nodeComprobante = $NodeComprobante->setNodeComprobante($data);
     }
 
     public function setCfdiRelacionados(array $data)
     {
-        if(!$data['TipoRelacion']) {
+        if (!$data['TipoRelacion']) {
             return false;
         }
 
         $this->CfdiRelacionados = $this->xml->createElement("cfdi:CfdiRelacionados");
-        $this->comprobante->appendChild($this->CfdiRelacionados);
+        $this->nodeComprobante->appendChild($this->CfdiRelacionados);
 
         $this->setAttribute([
             'TipoRelacion' => $data['TipoRelacion']
@@ -107,48 +94,46 @@ class Cfdi
             $this->setAttribute([
                 'UUID' => $item
             ], 'CfdiRelacionado');
-
         }
-
     }
 
-    public function setEmisor(array $data)
+    public function setNodeEmisor(array $data)
     {
-        // valid data
-
-        $this->emisor = $this->xml->createElement("cfdi:Emisor");
-        $this->comprobante->appendChild($this->emisor);
-
-        $this->setAttribute($data, 'emisor');
+        try {
+            // Validate data
+            v::stringType()->notEmpty()->setName('Comprobante:Emisor:Rfc')->assert($data['Rfc']);
+            v::stringType()->notEmpty()->setName('Comprobante:Emisor:Nombre')->assert($data['Nombre']);
+            v::stringType()->notEmpty()->setName('Comprobante:Emisor:RegimenFiscal')->assert($data['RegimenFiscal']);
+            $this->emisor = $this->xml->createElement("cfdi:Emisor");
+            $this->nodeComprobante->appendChild($this->emisor);
+            $this->setAttribute($data, $this->emisor);
+        } catch (NestedValidationException $exception) {
+            array_push($this->errors, $exception->getMessages());
+        }
     }
 
-    public function setReceptor(array $data)
+    public function setNodeReceptor(array $data)
     {
-        // valid data
-
         $this->receptor = $this->xml->createElement("cfdi:Receptor");
-        $this->comprobante->appendChild($this->receptor);
-
-        $this->setAttribute($data, 'receptor');
+        $this->nodeComprobante->appendChild($this->receptor);
+        $this->setAttribute($data, $this->receptor);
     }
 
-    public function setConceptos(array $data)
+    public function setNodeConceptos(array $data)
     {
         $this->conceptos = $this->xml->createElement("cfdi:Conceptos");
-        $this->comprobante->appendChild($this->conceptos);
+        $this->nodeComprobante->appendChild($this->conceptos);
 
         foreach ($data as $key => $item) {
 
             $this->concepto = $this->xml->createElement("cfdi:Concepto");
             $this->conceptos->appendChild($this->concepto);
+            self::setAttribute($item['Attributes'], $this->concepto);
 
-            // Atributos
-            $this->setAttribute($item['Attributes'], 'concepto');
-
-            if(count($item['Impuestos']['Traslados']) || count($item['Impuestos']['Retenciones'])) {
+            if (array_key_exists('Impuestos', $item)) {
 
                 // Impuestos
-                if(count($item['Impuestos'])) {
+                if (count($item['Impuestos'])) {
 
                     $this->conceptoimpuestos = $this->xml->createElement("cfdi:Impuestos");
                     $this->concepto->appendChild($this->conceptoimpuestos);
@@ -156,42 +141,42 @@ class Cfdi
 
                 // Impuestos Traslados
 
-                if(array_key_exists('Traslados', $item['Impuestos']) && count($item['Impuestos']['Traslados'])) {
+                if (array_key_exists('Traslados', $item['Impuestos']) && count($item['Impuestos']['Traslados'])) {
 
                     $this->conceptoimpuestosTraslados = $this->xml->createElement("cfdi:Traslados");
                     $this->conceptoimpuestos->appendChild($this->conceptoimpuestosTraslados);
 
-                    foreach($item['Impuestos']['Traslados'] as $key_imp => $tax) {
+                    foreach ($item['Impuestos']['Traslados'] as $key_imp => $tax) {
                         $this->conceptoimpuestosTraslado = $this->xml->createElement("cfdi:Traslado");
                         $this->conceptoimpuestosTraslados->appendChild($this->conceptoimpuestosTraslado);
-                        $this->setAttribute($tax, 'conceptoimpuestosTraslado');
+                        self::setAttribute($tax, $this->conceptoimpuestosTraslado);
                     }
                 }
 
                 // Impuestos Retencion
 
-                if(array_key_exists('Retenciones', $item['Impuestos']) && count($item['Impuestos']['Retenciones'])) {
+                if (array_key_exists('Retenciones', $item['Impuestos']) && count($item['Impuestos']['Retenciones'])) {
 
                     $this->conceptoimpuestosretenciones = $this->xml->createElement("cfdi:Retenciones");
                     $this->conceptoimpuestos->appendChild($this->conceptoimpuestosretenciones);
 
-                    foreach($item['Impuestos']['Retenciones'] as $key_imp => $tax) {
+                    foreach ($item['Impuestos']['Retenciones'] as $key_imp => $tax) {
                         $this->conceptoimpuestosRetencion = $this->xml->createElement("cfdi:Retencion");
                         $this->conceptoimpuestosretenciones->appendChild($this->conceptoimpuestosRetencion);
-                        $this->setAttribute($tax, 'conceptoimpuestosRetencion');
+                        self::setAttribute($tax, $this->conceptoimpuestosRetencion);
                     }
                 }
 
                 // Informacion aduanera
 
-                if(array_key_exists('pedimentos', $item) && count($item['pedimentos']) > 0) {
+                if (array_key_exists('pedimentos', $item) && count($item['pedimentos']) > 0) {
 
                     foreach ($item['pedimentos'] as $key => $pedimento) {
 
-                        if(!empty($pedimento['NumeroPedimento'])) {
+                        if (!empty($pedimento['NumeroPedimento'])) {
                             $this->conceptoInformacionAduanera = $this->xml->createElement("cfdi:InformacionAduanera");
                             $this->concepto->appendChild($this->conceptoInformacionAduanera);
-                            $this->setAttribute($pedimento, 'conceptoInformacionAduanera');
+                            self::setAttribute($pedimento, $this->conceptoInformacionAduanera);
 
                             $this->conceptoInformacionAduanera->setAttribute('NumeroPedimento', $pedimento);
                         }
@@ -200,15 +185,14 @@ class Cfdi
 
                 // Cuenta Predial
 
-                if(array_key_exists('CuentaPredial', $item) && !is_null($item['CuentaPredial']['Numero'])) {
+                if (array_key_exists('CuentaPredial', $item) && !is_null($item['CuentaPredial']['Numero'])) {
 
                     $this->conceptoCuentaPredial = $this->xml->createElement("cfdi:CuentaPredial");
                     $this->concepto->appendChild($this->conceptoCuentaPredial);
-                    $this->setAttribute($item['CuentaPredial'], 'conceptoCuentaPredial');
+                    self::setAttribute($item['CuentaPredial'], $this->conceptoCuentaPredial);
 
                     $this->conceptoCuentaPredial->setAttribute('Numero', $item['CuentaPredial']['Numero']);
                 }
-
             }
         }
     }
@@ -216,19 +200,16 @@ class Cfdi
     public function setImpuestos(array $data)
     {
         // valid data
-
         $this->impuestos = $this->xml->createElement("cfdi:Impuestos");
-        $this->comprobante->appendChild($this->impuestos);
-
-        $this->setAttribute($data, 'impuestos');
-
+        $this->nodeComprobante->appendChild($this->impuestos);
+        self::setAttribute($data, $this->impuestos);
     }
 
     public function setImpuestosRetenciones(array $data)
     {
         // valid data
 
-        if(!count($data)) {
+        if (!count($data)) {
             return false;
         }
 
@@ -246,7 +227,7 @@ class Cfdi
 
     public function setImpuestosTraslados(array $data)
     {
-        if(!count($data)) {
+        if (!count($data)) {
             return false;
         }
 
@@ -264,16 +245,18 @@ class Cfdi
 
     public function setComplementoPagos(array $data)
     {
-        if(!count($data)) { return false; }
+        if (!count($data)) {
+            return false;
+        }
 
         $this->Complemento = $this->xml->createElement("cfdi:Complemento");
-        $this->comprobante->appendChild($this->Complemento);
+        $this->nodeComprobante->appendChild($this->Complemento);
 
         $this->Pagos = $this->xml->createElement("pago10:Pagos");
         $this->Complemento->appendChild($this->Pagos);
 
         $this->setAttribute([
-            "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance",
+            "xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance",
             "xmlns:pago10" => "http://www.sat.gob.mx/Pagos",
             "xsi:schemaLocation" => "http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd http://www.sat.gob.mx/Pagos http://www.sat.gob.mx/sitio_internet/cfd/Pagos/Pagos10.xsd"
         ], 'comprobante');
@@ -300,14 +283,16 @@ class Cfdi
 
     public function setComplementoComercioExterior(array $data)
     {
-        if(!count($data)) { return false; }
+        if (!count($data)) {
+            return false;
+        }
 
         $this->Complemento = $this->xml->createElement("cfdi:Complemento");
-        $this->comprobante->appendChild($this->Complemento);
+        $this->nodeComprobante->appendChild($this->Complemento);
 
         $this->setAttribute([
-            "xmlns:cce11"=>"http://www.sat.gob.mx/ComercioExterior11",
-			"xsi:schemaLocation" => "http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd http://www.sat.gob.mx/ComercioExterior11 http://www.sat.gob.mx/sitio_internet/cfd/ComercioExterior11/ComercioExterior11.xsd"
+            "xmlns:cce11" => "http://www.sat.gob.mx/ComercioExterior11",
+            "xsi:schemaLocation" => "http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd http://www.sat.gob.mx/ComercioExterior11 http://www.sat.gob.mx/sitio_internet/cfd/ComercioExterior11/ComercioExterior11.xsd"
         ], 'comprobante');
 
         $this->ComercioExterior = $this->xml->createElement("cce11:ComercioExterior");
@@ -350,13 +335,15 @@ class Cfdi
 
     public function setComplementoOtrosDerechosImpuestos(array $data)
     {
-        if(!count($data)) { return false; }
+        if (!count($data)) {
+            return false;
+        }
 
         // todo separar
         // $OtrosDerechosImpuestos = new \lalocespedes\Cfdimx\Complementos\Cfdi\OtrosDerechosImpuestos();
 
         $this->Complemento = $this->xml->createElement("cfdi:Complemento");
-        $this->comprobante->appendChild($this->Complemento);
+        $this->nodeComprobante->appendChild($this->Complemento);
 
         $this->OtrosDerechosImpuestos = $this->xml->createElement("implocal:ImpuestosLocales");
         $this->Complemento->appendChild($this->OtrosDerechosImpuestos);
@@ -365,13 +352,13 @@ class Cfdi
             "xsi:schemaLocation" => "http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd http://www.sat.gob.mx/implocal http://www.sat.gob.mx/sitio_internet/cfd/implocal/implocal.xsd",
             "xmlns:implocal" => "http://www.sat.gob.mx/implocal",
             "xmlns:cfdi" => "http://www.sat.gob.mx/cfd/3",
-            "xmlns:xsi"=>"http://www.w3.org/2001/XMLSchema-instance"
+            "xmlns:xsi" => "http://www.w3.org/2001/XMLSchema-instance"
         ], 'comprobante');
 
         $this->setAttribute([
             "version" => "1.0",
-            "TotaldeRetenciones" => substr($data['ImpuestosLocales']['TotaldeRetenciones'],0,strpos($data['ImpuestosLocales']['TotaldeRetenciones'],".") + 3),
-            "TotaldeTraslados" => substr($data['totalImpuestosLocalesTrasladados'],0,strpos($data['totalImpuestosLocalesTrasladados'],".") + 3)
+            "TotaldeRetenciones" => substr($data['ImpuestosLocales']['TotaldeRetenciones'], 0, strpos($data['ImpuestosLocales']['TotaldeRetenciones'], ".") + 3),
+            "TotaldeTraslados" => substr($data['totalImpuestosLocalesTrasladados'], 0, strpos($data['totalImpuestosLocalesTrasladados'], ".") + 3)
         ], 'OtrosDerechosImpuestos');
 
         foreach ($data['ImpuestosLocalesTraslados'] as $key => $local) {
@@ -379,32 +366,6 @@ class Cfdi
             $this->OtrosDerechosImpuestos->appendChild($this->TrasladosLocales);
             $this->setAttribute($local, 'TrasladosLocales');
         }
-
-    }
-
-    public function setCer($cer, $key)
-    {
-        $this->noCertificado = \lalocespedes\Cfdimx\Csd::getnoCertificado($cer);
-        $this->cerfilecontent = $cer;
-        $this->keypemfilecontent = $key;
-    }
-
-    public function getXML()
-    {
-        if($this->valid) {
-
-            $this->Sellar();
-
-            return $this->xml->saveXml();
-        }
-
-        $this->xml = null;
-        return $this->errors();
-    }
-
-    public function saveXml()
-    {
-        return $this->xml->save('response.xml');
     }
 
     public function failed()
@@ -417,56 +378,37 @@ class Cfdi
         return $this->errors;
     }
 
-    private function setAttribute(array $data, $node)
+    public static function setAttribute(array $data, $node)
     {
         foreach ($data as $key => $val) {
-
-            // for ($i=0;$i<strlen($val); $i++) {
-            //     $a = substr($val,$i,1);
-            //     if ($a > chr(127) && $a !== chr(219) && $a !== chr(211) && $a !== chr(209)) {
-            //         $val = substr_replace($val, ".", $i, 1);
-            //     }
-            // }
-
-            // $val = preg_replace('/\s+/', ' ', $val); // Regla 5a y 5c
-            // // $val = preg_replace('/\s\s+/', ' ', $val);   // Regla 5a y 5c
             $val = trim($val); // Regla 5b
-            if (strlen($val)>0) { // Regla 6
-                $val = str_replace(array('"','>','<'),"'",$val);  // &...;
-                // $val = str_replace("|","/",$val); // Regla 1
-                $val = utf8_encode(str_replace("|","/",$val)); // Regla 1
-                $this->{$node}->setAttribute($key,$val);
+            if (strlen($val) > 0) { // Regla 6
+                $val = str_replace(array('"', '>', '<'), "'", $val);  // &...;
+                $val = str_replace("|", "/", $val); // Regla 1
+                $node->setAttribute($key, $val);
             }
         }
     }
 
-    public function getCadenaOriginal()
+    public function setCer($cer, $key)
     {
-        $xsl = new DOMDocument("1.0","UTF-8");
-        $xsl->load(__DIR__ . '/../utils/xslt/cadenaoriginal_3_3.xslt');
-        $proc = new XSLTProcessor;
-        $proc->importStyleSheet($xsl);
-        $new = new \DOMDocument("1.0","UTF-8");
-        $new->loadXML($this->xml->saveXml());
-
-        $cadena_original = $proc->transformToXML($new);
-
-        return $cadena_original;
+        $this->noCertificado = Csd::getnoCertificado($cer);
+        $this->cerfilecontent = $cer;
+        $this->keypemfilecontent = $key;
     }
 
-    private function Sellar()
+    public function sellar()
     {
         $cer64 = str_replace(array('\n', '\r'), '', base64_encode($this->cerfilecontent));
-        $this->comprobante->setAttribute('Certificado', $cer64);
-        $this->comprobante->setAttribute('NoCertificado', $this->noCertificado);
+        $this->nodeComprobante->setAttribute('Certificado', $cer64);
+        $this->nodeComprobante->setAttribute('NoCertificado', $this->noCertificado);
 
+        $getCadenaOriginal = CadenaOriginal::getCadenaOriginal($this->xml);
         $private = openssl_get_privatekey($this->keypemfilecontent);
-        openssl_sign($this->getCadenaOriginal(), $sig, $private, OPENSSL_ALGO_SHA256);
-        openssl_free_key($private);
+        openssl_sign($getCadenaOriginal, $sig, $private, OPENSSL_ALGO_SHA256);
 
         $sello64 = base64_encode($sig);
 
-        $this->comprobante->setAttribute('Sello', $sello64);
+        $this->nodeComprobante->setAttribute('Sello', $sello64);
     }
-
 }
