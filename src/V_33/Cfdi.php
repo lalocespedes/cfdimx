@@ -21,9 +21,12 @@ class Cfdi
     */
     protected $valid = true;
 
+    /**
+     * @var DomDocument
+     */
     public $xml;
 
-    protected $comprobante;
+    public $comprobante;
     protected $emisor;
     protected $receptor;
     protected $conceptos;
@@ -442,14 +445,17 @@ class Cfdi
 
     public function getCadenaOriginal()
     {
-        $xsl = new DOMDocument("1.0","UTF-8");
-        $xsl->load(__DIR__ . '/../utils/xslt/cadenaoriginal_3_3.xslt');
-        $proc = new XSLTProcessor;
-        $proc->importStyleSheet($xsl);
         $new = new \DOMDocument("1.0","UTF-8");
         $new->loadXML($this->xml->saveXml());
 
+        $xsl = new DOMDocument();
+        $xsl->load(__DIR__ . '/../utils/xslt/cadenaoriginal_3_3.xslt');
+        $proc = new XSLTProcessor;
+        $proc->importStyleSheet($xsl);
+
+
         $cadena_original = $proc->transformToXML($new);
+        $cadena_original = str_replace(array("\r", "\n"), '', $cadena_original);
 
         return $cadena_original;
     }
