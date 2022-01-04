@@ -3,25 +3,18 @@
 namespace lalocespedes\Cfdimx;
 
 use League\Flysystem\Filesystem;
-use Spatie\Dropbox\Client;
-use Spatie\FlysystemDropbox\DropboxAdapter;
+use League\Flysystem\Adapter\Local;
 use Carbon\Carbon;
 
 /**
  *
  */
-class Csd
+ class Csd
 {
-    /**
-     * @var Filesystem
-     */
-    private $fs;
-
-    public function __construct()
+    public function __construct($path)
     {
-        $client = new Client(getenv('DROPBOX_AUTH_TOKEN'));
-        $adapter = new DropboxAdapter($client);
-        $this->fs = new Filesystem($adapter, ['case_sensitive' => false]);
+        $adapter = new Local($path);
+        $this->fs = new Filesystem($adapter);
     }
 
     public function getCer($file)
@@ -42,47 +35,49 @@ class Csd
         fclose($fp);
 
         $SerieCer = "";
-        $xserial = exec('openssl x509 -inform DER -in ' . realpath($certemp) . ' -serial -noout');
+        $xserial = exec('openssl x509 -inform DER -in '. realpath($certemp).' -serial -noout');
 
         $serie = str_replace('serial=', '', $xserial);
         $serie = str_split($serie);
         $max = count($serie);
 
-        for ($i = 1; $i < $max; $i++) {
-            $SerieCer .= $serie[$i];
+        for ($i = 1; $i < $max ; $i++) {
+            $SerieCer.=$serie[$i];
             $i++;
         }
 
         unlink(realpath($certemp));
         return $SerieCer;
+
     }
 
-    public static function belongsRfc($filepath, $user)
+    private function belongsRfc($filepath)
     {
-        $result = shell_exec('openssl x509 -inform DER -in ' . $filepath . ' -subject');
+        $result = shell_exec('openssl x509 -inform DER -in '.$cer_path.' -subject');
 
         $result = explode("\n", $result);
 
         $line = substr($result[0], strpos($result[0], "UniqueIdentifier=") + 17);
         $rfc = trim(substr($line, 0, strpos($line, "/")));
 
-        if ($rfc != $user->tax_id_number) {
-            throw new \Exception('Este Certificado, pertenece a ' . $rfc);
+        if($rfc != $this->user->tax_id_number){
+            throw new \Exception('Este Certificado, pertenece a '. $rfc);
         }
 
         return true;
     }
 
-    public static function Outdate($filepath)
+    private function Outdate($filepath)
     {
-        $result = shell_exec('openssl x509 -inform DER -in ' . $filepath . ' -enddate');
+        $result = shell_exec('openssl x509 -inform DER -in '.$filepath.' -enddate');
         $result = explode("\n", $result);
         $xfecha_vence = str_replace('notAfter=', '', $result[0]);
 
-        if (Carbon::now()->timestamp >= Carbon::parse($xfecha_vence)->timestamp) {
+        if(Carbon::now()->timestamp >= Carbon::parse($xfecha_vence)->timestamp){
             throw new \Exception('Certificado vencido');
         }
 
         return true;
     }
+
 }
