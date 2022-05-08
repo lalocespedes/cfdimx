@@ -436,8 +436,8 @@ class Cfdi
             $val = trim($val); // Regla 5b
             if (strlen($val)>0) { // Regla 6
                 $val = str_replace(array('"','>','<'),"'",$val);  // &...;
-                // $val = str_replace("|","/",$val); // Regla 1
-                $val = utf8_encode(str_replace("|","/",$val)); // Regla 1
+                $val = str_replace("|","/",$val); // Regla 1
+                // $val = utf8_encode(str_replace("|","/",$val)); // Regla 1
                 $this->{$node}->setAttribute($key,$val);
             }
         }
