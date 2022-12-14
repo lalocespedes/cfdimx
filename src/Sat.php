@@ -36,14 +36,15 @@ class Sat
 
     }
 
-    public static function qr_sat($impo, $rfc_emisor, $rfc_receptor, $uuid)
+    public static function qr_sat($impo, $rfc_emisor, $rfc_receptor, $uuid, $sello)
     {
-        $impo = (double)$impo;
-        $impo =sprintf("%.6f", $impo);
-        $impo = str_pad($impo,17,"0",STR_PAD_LEFT);
+        // $impo = (double)$impo;
+        // $impo =sprintf("%.6f", $impo);
+        // $impo = str_pad($impo,17,"0",STR_PAD_LEFT);
 
         $uuid = strtoupper($uuid);
+        $url_sat_verificacfdi = "https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx";
 
-        return "?re=$rfc_emisor&rr=$rfc_receptor&tt=$impo&id=$uuid";
+        return "$url_sat_verificacfdi?id=$uuid&re=$rfc_emisor&rr=$rfc_receptor&tt=$impo&fe=$sello";
     }
 }
