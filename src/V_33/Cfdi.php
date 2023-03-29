@@ -340,8 +340,17 @@ class Cfdi
 
         $this->setAttribute($data['receptor']['Domicilio'], 'ComercioExteriorReceptorDomicilio');
 
-        $this->ComercioExteriorMercancias = $this->xml->createElement("cce11:Mercancias");
-        $this->ComercioExterior->appendChild($this->ComercioExteriorMercancias);
+        // Destinatario
+
+        $this->ComercioExteriorDestinatario = $this->xml->createElement("cce11:Destinatario");
+        $this->ComercioExterior->appendChild($this->ComercioExteriorDestinatario);
+        $this->setAttribute($data['destinatario'], 'ComercioExteriorDestinatario');
+
+        $this->ComercioExteriorDestinatarioDomicilio = $this->xml->createElement("cce11:Domicilio");
+        $this->ComercioExteriorDestinatario->appendChild($this->ComercioExteriorDestinatarioDomicilio);
+        $this->setAttribute($data['destinatario']['Domicilio'], 'ComercioExteriorDestinatarioDomicilio');
+
+        // Mercancias
 
         foreach ($data['mercancias'] as $key => $value) {
 
