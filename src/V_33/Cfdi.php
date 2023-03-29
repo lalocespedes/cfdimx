@@ -352,6 +352,9 @@ class Cfdi
 
         // Mercancias
 
+        $this->ComercioExteriorMercancias = $this->xml->createElement("cce11:Mercancias");
+        $this->ComercioExterior->appendChild($this->ComercioExteriorMercancias);
+
         foreach ($data['mercancias'] as $key => $value) {
 
             $this->ComercioExteriorMercancia = $this->xml->createElement("cce11:Mercancia");
